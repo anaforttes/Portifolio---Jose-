@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>José | Engenheiro Mecânico — Projetos & CAD 3D</title>
+  <meta name="description" content="Portfólio de Engenharia Mecânica, Projetos em SolidWorks, Simulação Estrutural e Detalhamento Técnico." />
+
+  <!-- Google Fonts: Space Grotesk (títulos técnicos), Inter (leitura) e JetBrains Mono (cotas/dados CAD) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Three.js + STLLoader + OrbitControls via CDN para visualização de peças do SolidWorks -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <!-- Fundo técnico tipo folha de desenho / grid CAD -->
+  <div class="cad-grid-bg" aria-hidden="true"></div>
+
+  <!-- Cabeçalho e Navegação por Abas -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="#inicio" class="brand" data-tab-target="inicio">
+        <span class="brand-badge">
+          <i data-lucide="cog"></i>
+        </span>
+        <div class="brand-text">
+          <span class="brand-name">ENG. JOSÉ</span>
+          <span class="brand-role">PROJETOS MECÂNICOS • SOLIDWORKS</span>
+        </div>
+      </a>
+
+      <nav class="main-nav" aria-label="Navegação Principal">
+        <button class="nav-tab active" data-tab-target="inicio">
+          <i data-lucide="compass"></i>
+          <span>Visão Geral</span>
+        </button>
+        <button class="nav-tab" data-tab-target="projetos">
+          <i data-lucide="layers"></i>
+          <span>Projetos & SolidWorks</span>
+          <span class="tab-count" id="project-count-badge">4</span>
+        </button>
+        <button class="nav-tab" data-tab-target="visualizador">
+          <i data-lucide="box"></i>
+          <span>Laboratório 3D (STL)</span>
+        </button>
+        <button class="nav-tab" data-tab-target="sobre">
+          <i data-lucide="award"></i>
+          <span>Competências</span>
+        </button>
+        <button class="nav-tab" data-tab-target="contato">
+          <i data-lucide="mail"></i>
+          <span>Contato</span>
+        </button>
+      </nav>
+
+      <div class="header-actions">
+        <button class="btn btn-primary btn-sm" data-tab-target="projetos">
+          <i data-lucide="folder-git-2"></i>
+          Ver Projetos
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <!-- ==========================================
+         ABA 1: VISÃO GERAL (INÍCIO)
+    =========================================== -->
+    <section id="tab-inicio" class="tab-panel active">
+      <div class="container">
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <div class="tech-tag">
+              <span class="status-dot"></span>
+              <span>ENGENHARIA MECÂNICA • PROJETOS & MANUFATURA</span>
+            </div>
+
+            <h1 class="hero-title">
+              Transformando conceitos em <span class="text-accent">projetos mecânicos</span> prontos para fabricação.
+            </h1>
+
+            <p class="hero-description">
+              Desenvolvimento de máquinas, dispositivos industriais, conjuntos soldados e modelagem paramétrica avançada no <strong>SolidWorks</strong>. Do equacionamento e simulação estrutural (FEA) ao detalhamento executivo.
+            </p>
+
+            <div class="hero-cta-group">
+              <button class="btn btn-primary" data-tab-target="projetos">
+                <i data-lucide="layers"></i>
+                Explorar Portfólio de Projetos
+              </button>
+              <button class="btn btn-secondary" data-tab-target="visualizador">
+                <i data-lucide="rotate-3d"></i>
+                Abrir Visualizador SolidWorks 3D
+              </button>
+            </div>
+
+            <div class="hero-metrics">
+              <div class="metric-item">
+                <span class="metric-code">CAD 3D</span>
+                <strong class="metric-value">SolidWorks</strong>
+                <span class="metric-label">Peças, Montagens & Chapas</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-code">CAE / FEA</span>
+                <strong class="metric-value">Simulação</strong>
+                <span class="metric-label">Análise de Tensões & Fator de Segurança</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-code">DFM / DFA</span>
+                <strong class="metric-value">Detalhamento</strong>
+                <span class="metric-label">Desenhos Técnicos & BOM</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Preview 3D Interativo na Home -->
+          <div class="hero-cad-card">
+            <div class="cad-card-header">
+              <div class="cad-file-info">
+                <i data-lucide="file-box" class="icon-accent"></i>
+                <span class="mono-text" id="hero-model-filename">CONJUNTO_REDUTOR_V2.SLDASM</span>
+              </div>
+              <div class="cad-badges">
+                <span class="cad-pill">INTERATIVO 3D</span>
+                <span class="cad-pill accent">ESCALA 1:1</span>
+              </div>
+            </div>
+
+            <div class="cad-viewport-wrapper">
+              <div id="hero-3d-canvas" class="cad-viewport" aria-label="Visualização 3D interativa de peça mecânica"></div>
+
+              <!-- HUD Técnico estilo SolidWorks -->
+              <div class="cad-hud-top-left mono-text">
+                <div>UNIDADE: mm (ISO)</div>
+                <div>MATERIAL: Aço SAE 4140</div>
+                <div id="hero-part-label">PEÇA: Engrenagem / Conjunto</div>
+              </div>
+
+              <div class="cad-hud-bottom">
+                <span class="hud-hint"><i data-lucide="mouse"></i> Arraste para girar • Scroll para zoom</span>
+                <div class="hud-controls">
+                  <button class="hud-btn active" id="hero-btn-solid" title="Modo Sólido Sombreamento">Sólido</button>
+                  <button class="hud-btn" id="hero-btn-wire" title="Modo Arestas / Malha CAD">Wireframe</button>
+                  <button class="hud-btn" id="hero-btn-switch" title="Trocar Peça de Exemplo">Trocar Peça</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Destaques Rápidos de Projetos -->
+        <div class="section-preview-bar">
+          <div>
+            <span class="eyebrow">PROJETOS EM DESTAQUE</span>
+            <h2 class="section-subtitle">Últimos desenvolvimentos em SolidWorks</h2>
+          </div>
+          <button class="btn btn-outline" data-tab-target="projetos">
+            Ver todos os projetos <i data-lucide="arrow-right"></i>
+          </button>
+        </div>
+
+        <div class="featured-projects-grid" id="home-featured-grid">
+          <!-- Renderizado via JS a partir da base de projetos -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         ABA 2: PROJETOS & SOLIDWORKS
+    =========================================== -->
+    <section id="tab-projetos" class="tab-panel">
+      <div class="container">
+        <div class="page-header">
+          <div>
+            <span class="eyebrow">ACERVO TÉCNICO DE ENGENHARIA</span>
+            <h2 class="page-title">Projetos Mecânicos & Modelagem CAD</h2>
+            <p class="page-lead">
+              Selecione um projeto para consultar memorial descritivo, folha de dados técnicos e inspecionar o modelo 3D interativo.
+            </p>
+          </div>
+        </div>
+
+        <!-- Barra de Filtros e Busca -->
+        <div class="projects-toolbar">
+          <div class="filter-pills" role="tablist" aria-label="Filtrar projetos por categoria">
+            <button class="filter-pill active" data-filter="todos">Todos os Projetos</button>
+            <button class="filter-pill" data-filter="maquinas">Máquinas & Dispositivos</button>
+            <button class="filter-pill" data-filter="estruturas">Estruturas & Tubulações</button>
+            <button class="filter-pill" data-filter="simulacao">Simulação FEA & Otimização</button>
+          </div>
+
+          <div class="search-box">
+            <i data-lucide="search"></i>
+            <input type="text" id="project-search" placeholder="Buscar por peça, norma, material..." />
+          </div>
+        </div>
+
+        <!-- Grid Principal de Projetos -->
+        <div class="projects-grid" id="projects-main-grid">
+          <!-- Renderizado dinamicamente via JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         ABA 3: VISUALIZADOR 3D SOLIDWORKS (STL)
+    =========================================== -->
+    <section id="tab-visualizador" class="tab-panel">
+      <div class="container">
+        <div class="page-header">
+          <div>
+            <span class="eyebrow">INSPEÇÃO CAD NO NAVEGADOR</span>
+            <h2 class="page-title">Visualizador 3D para SolidWorks</h2>
+            <p class="page-lead">
+              Inspecione os modelos 3D dos projetos ou carregue qualquer arquivo <code>.STL</code> exportado diretamente do SolidWorks (<em>Arquivo &rarr; Salvar como &rarr; STL</em>).
+            </p>
+          </div>
+        </div>
+
+        <div class="viewer-layout">
+          <!-- Painel Lateral de Controle CAD -->
+          <aside class="viewer-sidebar">
+            <div class="sidebar-block">
+              <h3 class="sidebar-title">
+                <i data-lucide="cuboid"></i> Modelos de Demonstração
+              </h3>
+              <p class="sidebar-help">Escolha uma peça do portfólio para inspecionar:</p>
+              <div class="preset-model-list" id="viewer-preset-list">
+                <button class="preset-btn active" data-preset="gear">
+                  <span class="preset-code">PRT-01</span>
+                  <span class="preset-name">Engrenagem Cilíndrica Helicoidal</span>
+                </button>
+                <button class="preset-btn" data-preset="flange">
+                  <span class="preset-code">PRT-02</span>
+                  <span class="preset-name">Flange Industrial ANSI B16.5</span>
+                </button>
+                <button class="preset-btn" data-preset="bracket">
+                  <span class="preset-code">PRT-03</span>
+                  <span class="preset-name">Suporte Estrutural Usinado</span>
+                </button>
+                <button class="preset-btn" data-preset="piston">
+                  <span class="preset-code">ASM-04</span>
+                  <span class="preset-name">Êmbolo & Pino de Atuador</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="sidebar-block">
+              <h3 class="sidebar-title">
+                <i data-lucide="upload"></i> Carregar do SolidWorks (.STL)
+              </h3>
+              <p class="sidebar-help">
+                Exporte sua peça do SolidWorks no formato <strong>.STL</strong> e selecione abaixo para visualizar em tempo real:
+              </p>
+              <label for="stl-file-input" class="upload-dropzone" id="stl-dropzone">
+                <i data-lucide="file-up"></i>
+                <span>Clique ou arraste um arquivo <strong>.STL</strong></span>
+                <small class="mono-text">Suporta STL Binário ou ASCII</small>
+                <input type="file" id="stl-file-input" accept=".stl,.STL" hidden />
+              </label>
+            </div>
+
+            <div class="sidebar-block">
+              <h3 class="sidebar-title">
+                <i data-lucide="sliders-horizontal"></i> Estilo de Exibição CAD
+              </h3>
+              <div class="viewer-toggles">
+                <button class="toggle-btn active" id="lab-mode-solid">
+                  <i data-lucide="box"></i> Sombreado com Arestas
+                </button>
+                <button class="toggle-btn" id="lab-mode-wireframe">
+                  <i data-lucide="grid"></i> Estrutura de Arame (Wireframe)
+                </button>
+                <button class="toggle-btn" id="lab-mode-xray">
+                  <i data-lucide="scan-eye"></i> Raio-X / Transparência
+                </button>
+              </div>
+
+              <div class="color-Finish-picker">
+                <span class="mono-text">ACABAMENTO DO MATERIAL:</span>
+                <div class="swatch-row">
+                  <button class="material-swatch active" data-color="#cdd2d5" title="Aço Usinado (#cdd2d5)" style="background:#cdd2d5"></button>
+                  <button class="material-swatch" data-color="#df6112" title="Laranja Industrial / Pintura Epóxi (#df6112)" style="background:#df6112"></button>
+                  <button class="material-swatch" data-color="#4a5455" title="Ferro Fundido / Fosfatizado (#4a5455)" style="background:#4a5455"></button>
+                  <button class="material-swatch" data-color="#38bdf8" title="Anodizado Azul CAD" style="background:#38bdf8"></button>
+                </div>
+              </div>
+            </div>
+          </aside>
+
+          <!-- Palco 3D Principal -->
+          <div class="viewer-stage-card">
+            <div class="cad-card-header">
+              <div class="cad-file-info">
+                <i data-lucide="cpu" class="icon-accent"></i>
+                <span class="mono-text" id="lab-current-filename">PRT-01_ENGRENAGEM_MOD4.SLDPRT</span>
+              </div>
+              <div class="cad-badges">
+                <button class="hud-btn" id="lab-btn-reset-cam">
+                  <i data-lucide="maximize-2"></i> Centralizar Vista (Isométrica)
+                </button>
+                <button class="hud-btn active" id="lab-btn-autorotate">
+                  <i data-lucide="refresh-cw"></i> Rotação Automática
+                </button>
+              </div>
+            </div>
+
+            <div id="lab-3d-canvas" class="lab-viewport"></div>
+
+            <!-- Barra Inferior de Cotas / Bounding Box -->
+            <div class="viewer-telemetry mono-text">
+              <div>DIMENSÕES (X × Y × Z): <strong id="lab-dims">120.0 × 120.0 × 36.0 mm</strong></div>
+              <div>MALHA (TRIÂNGULOS): <strong id="lab-tris">2.480</strong></div>
+              <div>STATUS: <strong class="text-accent" id="lab-status">PRONTO PARA INSPEÇÃO</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         ABA 4: COMPETÊNCIAS & METODOLOGIA
+    =========================================== -->
+    <section id="tab-sobre" class="tab-panel">
+      <div class="container">
+        <div class="page-header">
+          <div>
+            <span class="eyebrow">PERFIL PROFISSIONAL</span>
+            <h2 class="page-title">Engenharia de Projetos & Especialidades</h2>
+            <p class="page-lead">
+              Foco em soluções mecânicas robustas, redução de custos de fabricação (DFM/DFA) e documentação técnica padronizada.
+            </p>
+          </div>
+        </div>
+
+        <div class="skills-grid">
+          <div class="skill-card">
+            <div class="skill-icon"><i data-lucide="box"></i></div>
+            <h3>Modelagem 3D no SolidWorks</h3>
+            <p>Modelagem paramétrica de peças complexas, grandes montagens, estruturas metálicas (Weldments), chaparia (Sheet Metal) e superfícies.</p>
+            <ul class="tech-list mono-text">
+              <li>SolidWorks (Peças, Montagens, Desenhos)</li>
+              <li>Chapas Metálicas & Planificação DXF</li>
+              <li>Estruturas Soldadas & Lista de Corte</li>
+            </ul>
+          </div>
+
+          <div class="skill-card">
+            <div class="skill-icon"><i data-lucide="activity"></i></div>
+            <h3>Análise Estrutural & Simulação</h3>
+            <p>Validação de projetos por Elementos Finitos (FEA), verificação de tensões de Von Mises, deslocamentos, flambagem e fadiga.</p>
+            <ul class="tech-list mono-text">
+              <li>SolidWorks Simulation / ANSYS</li>
+              <li>Cálculo de Elementos de Máquinas</li>
+              <li>Otimização Topológica e de Massa</li>
+            </ul>
+          </div>
+
+          <div class="skill-card">
+            <div class="skill-icon"><i data-lucide="file-Spreadsheet"></i></div>
+            <h3>Detalhamento & Manufatura</h3>
+            <p>Elaboração de desenhos executivos completos com tolerâncias geométricas (GD&T), ajustes ISO, simbologia de solda e lista de materiais (BOM).</p>
+            <ul class="tech-list mono-text">
+              <li>Normas ABNT, ISO, ASME e DIN</li>
+              <li>GD&T e Toleranciamento Dimensional</li>
+              <li>Arquivos para Corte Laser, CNC e Impressão 3D</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Paleta / Identidade Técnica -->
+        <div class="workflow-banner">
+          <div class="workflow-step">
+            <span class="step-num">01</span>
+            <h4>Levantamento & Conceito</h4>
+            <p>Definição de requisitos de carga, cinemática, espaço físico e normas aplicáveis.</p>
+          </div>
+          <div class="workflow-step">
+            <span class="step-num">02</span>
+            <h4>Modelagem CAD (SolidWorks)</h4>
+            <p>Construção 3D paramétrica com análise de interferência e seleção de componentes comerciais.</p>
+          </div>
+          <div class="workflow-step">
+            <span class="step-num">03</span>
+            <h4>Validação & CAE</h4>
+            <p>Dimensionamento analítico e simulação numérica para garantir segurança operacional.</p>
+          </div>
+          <div class="workflow-step">
+            <span class="step-num">04</span>
+            <h4>Detalhamento & Entrega</h4>
+            <p>Emissão de folhas de desenho 2D, listas de materiais (BOM) e arquivos STEP/STL/DXF.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         ABA 5: CONTATO
+    =========================================== -->
+    <section id="tab-contato" class="tab-panel">
+      <div class="container">
+        <div class="contact-card">
+          <div class="contact-info">
+            <span class="eyebrow">VAMOS CONVERSAR</span>
+            <h2 class="page-title">Precisa desenvolver um projeto mecânico?</h2>
+            <p class="page-lead">
+              Disponível para projetos de engenharia mecânica, modelagem 3D em SolidWorks, detalhamento técnico e oportunidades na área de projetos industriais.
+            </p>
+
+            <div class="contact-links">
+              <a href="mailto:jose.engenharia@email.com" class="contact-item">
+                <i data-lucide="mail"></i>
+                <div>
+                  <span class="mono-text">E-MAIL PROFISSIONAL</span>
+                  <strong>jose.engenharia@email.com</strong>
+                </div>
+              </a>
+              <a href="https://linkedin.com" target="_blank" rel="noopener" class="contact-item">
+                <i data-lucide="linkedin"></i>
+                <div>
+                  <span class="mono-text">LINKEDIN</span>
+                  <strong>linkedin.com/in/jose-engenharia</strong>
+                </div>
+              </a>
+              <a href="https://github.com" target="_blank" rel="noopener" class="contact-item">
+                <i data-lucide="github"></i>
+                <div>
+                  <span class="mono-text">REPOSITÓRIO CAD & AUTOMAÇÃO</span>
+                  <strong>github.com/Portifolio---Jose-</strong>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          <form class="contact-form" id="contact-form">
+            <h3>Enviar Mensagem Técnica</h3>
+            <div class="form-group">
+              <label for="nome">Nome / Empresa</label>
+              <input type="text" id="nome" placeholder="Ex.: Indústria Metalúrgica ABC" required />
+            </div>
+            <div class="form-group">
+              <label for="email">E-mail para retorno</label>
+              <input type="email" id="email" placeholder="seu@email.com" required />
+            </div>
+            <div class="form-group">
+              <label for="escopo">Tipo de Demanda</label>
+              <select id="escopo">
+                <option value="projeto">Projeto de Máquina / Dispositivo (SolidWorks)</option>
+                <option value="detalhamento">Detalhamento 2D & Desenhos de Fabricação</option>
+                <option value="simulacao">Cálculo Estrutural / Simulação FEA</option>
+                <option value="oportunidade">Oportunidade Profissional / Contratação</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="mensagem">Descrição do Projeto</label>
+              <textarea id="mensagem" rows="4" placeholder="Descreva brevemente a necessidade técnica..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">
+              <i data-lucide="send"></i> Enviar Solicitação
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal de Ficha Técnica do Projeto -->
+  <div class="project-modal-backdrop" id="project-modal" aria-hidden="true">
+    <div class="project-modal-content" role="dialog" aria-modal="true" aria-labelledby="modal-project-title">
+      <div class="modal-header">
+        <div>
+          <span class="mono-text text-accent" id="modal-project-code">PRJ-001</span>
+          <h3 id="modal-project-title">Título do Projeto</h3>
+        </div>
+        <button class="modal-close" id="modal-close-btn" aria-label="Fechar detalhes">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <p id="modal-project-desc" class="modal-desc"></p>
+
+        <div class="modal-specs-grid" id="modal-project-specs">
+          <!-- Especificações preenchidas via JS -->
+        </div>
+
+        <div class="modal-deliverables">
+          <h4 class="mono-text">ENTREGÁVEIS DE ENGENHARIA:</h4>
+          <ul id="modal-project-deliverables"></ul>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="modal-close-secondary">Fechar</button>
+        <button class="btn btn-primary" id="modal-open-3d-btn">
+          <i data-lucide="rotate-3d"></i> Inspecionar Peça no Visualizador 3D
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="mono-text">
+        © 2026 ENG. JOSÉ • PORTFÓLIO DE PROJETOS MECÂNICOS & SOLIDWORKS
+      </div>
+      <div class="palette-indicator" title="Paleta Técnica Aplicada">
+        <span class="swatch" style="background:#082c43"></span>
+        <span class="swatch" style="background:#df6112"></span>
+        <span class="swatch" style="background:#4a5455"></span>
+        <span class="swatch" style="background:#cdd2d5"></span>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
+
