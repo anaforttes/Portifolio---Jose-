@@ -966,8 +966,100 @@ body {
 }
 
 /* ==========================================================================
-   ABA 4: COMPETÊNCIAS & FLUXO DE PROJETO
+   ABA 4: CURRÍCULO, EXPERIÊNCIA & FORMAÇÃO
    ========================================================================== */
+.resume-columns {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 1.5rem;
+}
+
+.resume-panel {
+  background: var(--navy-darker);
+  border: 1px solid var(--steel-border);
+  border-radius: var(--radius-lg);
+  padding: 1.65rem;
+  box-shadow: var(--shadow-card);
+}
+
+.resume-section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--white-pure);
+  padding-bottom: 0.75rem;
+  margin-bottom: 1.15rem;
+  border-bottom: 1px solid var(--steel-border);
+}
+
+.resume-section-title svg {
+  width: 20px;
+  height: 20px;
+  color: var(--orange-accent);
+}
+
+.timeline-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.timeline-item {
+  background: rgba(8, 44, 67, 0.52);
+  border: 1px solid var(--steel-border);
+  border-left: 3px solid var(--orange-accent);
+  border-radius: var(--radius-sm);
+  padding: 1.15rem;
+}
+
+.timeline-item.compact {
+  padding: 0.9rem 1.05rem;
+}
+
+.timeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.timeline-header h4 {
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  color: var(--white-pure);
+}
+
+.timeline-role {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--aluminum-light);
+  margin-top: 0.15rem;
+}
+
+.timeline-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-size: 0.74rem;
+}
+
+.timeline-bullets {
+  margin-top: 0.95rem;
+  padding-left: 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  font-size: 0.88rem;
+  color: var(--aluminum-light);
+}
+
+.timeline-bullets strong {
+  color: var(--white-pure);
+}
+
 .skills-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -1240,7 +1332,8 @@ body {
 
   .hero-grid,
   .viewer-layout,
-  .contact-card {
+  .contact-card,
+  .resume-columns {
     grid-template-columns: 1fr;
   }
 

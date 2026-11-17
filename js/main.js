@@ -7,92 +7,93 @@ import { STLLoader } from 'three/addons/loaders/STLLoader.js';
    ========================================================================== */
 const PROJECTS_DATA = [
   {
-    id: 'prj-redutor',
-    code: 'SW-ASM-001',
-    title: 'Redutor de Velocidade Industrial de Eixos Paralelos',
-    category: 'maquinas',
-    software: 'SolidWorks 3D + Simulation',
-    preset3d: 'gear',
-    cadFile: 'PRT-01_ENGRENAGEM_MOD4.SLDPRT',
-    summary:
-      'Projeto mecânico completo de transmissão por engrenagens cilíndricas, dimensionamento segundo AGMA, seleção de rolamentos e carcaça bipartida.',
-    specs: {
-      Material: 'Aço Liga SAE 4140 / SAE 8620',
-      Norma: 'AGMA 2001 / DIN 3990',
-      Relacao: 'i = 4,5:1 (Potência 15 kW)',
-      Tolerancia: 'ISO IT7 / GD&T Completo'
-    },
-    deliverables: [
-      'Modelagem 3D paramétrica de conjunto (38 componentes)',
-      'Memória de cálculo de engrenagens, eixos e chavetas',
-      'Detalhamento executivo 2D para usinagem e lista de materiais (BOM)',
-      'Arquivo STL/STEP para inspeção tridimensional'
-    ]
-  },
-  {
-    id: 'prj-flange',
-    code: 'SW-PRT-002',
-    title: 'Manifold & Flange de Alta Pressão ANSI B16.5',
+    id: 'prj-icamento',
+    code: 'EST-SW-001',
+    title: 'Dispositivo de Içamento & Suporte Estrutural Industrial',
     category: 'estruturas',
-    software: 'SolidWorks Routing & FEA',
-    preset3d: 'flange',
-    cadFile: 'PRT-02_FLANGE_ANSI_300.SLDPRT',
-    summary:
-      'Conexão flangeada e tubulação industrial para linha de processo pressurizada, com verificação de aperto de estojos e vedação.',
-    specs: {
-      Material: 'Aço Carbono ASTM A105 / Inox 316L',
-      Norma: 'ASME B16.5 / ASME B31.3',
-      ClassePressao: 'Classe 300# (PN 50)',
-      Processo: 'Forjamento + Torneamento CNC'
-    },
-    deliverables: [
-      'Modelo paramétrico com tabela de projeto (Design Table) para múltiplos diâmetros',
-      'Isométrico de tubulação e lista de corte/solda',
-      'Análise de tensões no pescoço do flange via Elementos Finitos'
-    ]
-  },
-  {
-    id: 'prj-suporte',
-    code: 'SW-FEA-003',
-    title: 'Suporte Estrutural Otimizado para Atuador Hidráulico',
-    category: 'simulacao',
-    software: 'SolidWorks Simulation (FEA)',
+    software: 'SolidWorks 3D + Memória de Cálculo',
     preset3d: 'bracket',
-    cadFile: 'PRT-03_SUPORTE_ATUADOR.SLDPRT',
+    cadFile: 'EST-01_SUPORTE_ICAMENTO.SLDPRT',
     summary:
-      'Desenvolvimento e otimização estrutural de suporte submetido a cargas cíclicas de 45 kN, reduzindo 28% da massa mantendo Fator de Segurança > 2,5.',
+      'Desenvolvimento de projeto 3D e memória de cálculo detalhada para validação estrutural de dispositivo de içamento e suporte metálico submetido a cargas críticas de operação.',
     specs: {
       Material: 'Aço Estrutural ASTM A36 / SAE 1020',
-      CargaNominal: '45 kN Axial + Momento Fletor',
-      FatorSeguranca: 'FS = 2,65 (Von Mises)',
-      Fabricacao: 'Corte Laser + Dobra + Solda MIG'
+      Norma: 'ABNT NBR 8800 / ASME BTH-1',
+      Verificacao: 'Tensão de Von Mises, Cisalhamento e Solda',
+      Software: 'SolidWorks & Excel (Memorial)'
     },
     deliverables: [
-      'Relatório de Simulação Estrutural Estática e Fadiga',
-      'Arquivos DXF planificados para corte a laser',
-      'Desenho de conjunto soldado com simbologia AWS/ABNT'
+      'Modelagem 3D paramétrica em SolidWorks do suporte e olhais de içamento',
+      'Memória de cálculo estrutural detalhada com verificação de fator de segurança',
+      'Desenho técnico executivo com simbologia de solda e lista de materiais (BOM)',
+      'Emissão de documentação técnica para validação operacional'
     ]
   },
   {
-    id: 'prj-atuador',
-    code: 'SW-ASM-004',
-    title: 'Conjunto Êmbolo & Dispositivo de Prensagem Pneumática',
+    id: 'prj-nr12',
+    code: 'NR12-HRN-002',
+    title: 'Adequação de Máquinas à NR-12 & Apreciação de Risco (HRN)',
     category: 'maquinas',
-    software: 'SolidWorks Motion & CAD',
-    preset3d: 'piston',
-    cadFile: 'ASM-04_CONJUNTO_EMBOLO.SLDASM',
+    software: 'SolidWorks / Inventor + Método HRN',
+    preset3d: 'gear',
+    cadFile: 'MEC-02_TRANSMISSAO_NR12.SLDASM',
     summary:
-      'Dispositivo dedicado para linha de montagem automotiva com guiamento linear, alojamento de vedações e estudo cinemático de curso.',
+      'Engenharia diagnóstica, elaboração de Laudo de Apreciação de Riscos pelo método HRN (Hazard Rating Number) e concepção de enclausuramento/proteções físicas para transmissões de força.',
     specs: {
-      Material: 'Alumínio 7075-T6 / Aço Cromado',
-      CursoTrabalho: '250 mm @ 6 bar',
-      Acabamento: 'Anodização Dura + Retífica H7/g6',
-      Norma: 'ISO 15552 / NR-12'
+      Metodologia: 'HRN (Hazard Rating Number)',
+      Normas: 'NR-12 / ABNT NBR ISO 12100',
+      ModelagemCAD: 'Proteções Fixas e Móveis Intertravadas',
+      Aplicacao: 'Máquinas Industriais e Pesadas'
     },
     deliverables: [
-      'Montagem completa com verificação de interferência dinâmica',
-      'Especificação de anéis O-Ring, buchas guia e tolerâncias de ajuste',
-      'Pacote técnico completo para fabricação em ferramentaria'
+      'Laudo Técnico de Apreciação de Riscos (HRN) com matriz de severidade e probabilidade',
+      'Modelagem 3D das grades e proteções mecânicas de sistemas de transmissão',
+      'Plano de ação para adequação de segurança operacional',
+      'Padronização visual e técnica conforme exigências normativas'
+    ]
+  },
+  {
+    id: 'prj-andaimes',
+    code: 'EST-NR35-003',
+    title: 'Validação Estrutural de Andaimes & Pontos de Ancoragem (NR-35)',
+    category: 'estruturas',
+    software: 'Inventor / SolidWorks + Cálculo Estrutural',
+    preset3d: 'flange',
+    cadFile: 'TUB-03_ANCORAGEM_ESTRUTURAL.SLDPRT',
+    summary:
+      'Elaboração de memória de cálculo e verificação de estabilidade, flambagem e resistência para estruturas de andaimes, plataformas de acesso e pontos de ancoragem em altura.',
+    specs: {
+      Normas: 'NR-18 / NR-35 / ABNT NBR 6494',
+      Analise: 'Tração, Flambagem e Reações de Apoio',
+      Qualificacao: 'Supervisor NR-35 Trabalho em Altura',
+      Material: 'Tubos e Perfis de Aço Carbono'
+    },
+    deliverables: [
+      'Memória de cálculo completa de estabilidade e capacidade de carga',
+      'Detalhamento de conexões flangeadas, grampos e pontos de ancoragem',
+      'Laudo técnico de liberação e diretrizes de segurança em altura (NR-35)'
+    ]
+  },
+  {
+    id: 'prj-pcm',
+    code: 'PCM-AT-004',
+    title: 'Gestão de Ativos (PCM) & Confiabilidade de Frota e Maquinários',
+    category: 'simulacao',
+    software: 'SolidWorks + Excel Avançado (PCM)',
+    preset3d: 'piston',
+    cadFile: 'AT-04_CONJUNTO_ATUADOR_FROTA.SLDASM',
+    summary:
+      'Estruturação e implementação de planos de manutenção preventiva e corretiva para equipamentos pesados e frota logística, aliados ao redesenho CAD de componentes críticos.',
+    specs: {
+      Foco: 'Confiabilidade e Disponibilidade Física',
+      Estrategia: 'Manutenção Preventiva, Corretiva e Diagnóstica',
+      Ferramentas: 'SolidWorks, Inventor & Excel',
+      Setor: 'Operações Logísticas e Maquinário Pesado'
+    },
+    deliverables: [
+      'Planos mestres de manutenção preventiva e lubrificação por família de ativos',
+      'Padronização de ordens de serviço, checklists de inspeção e indicadores de frota',
+      'Modelagem 3D de subconjuntos hidráulicos/mecânicos para reposição e melhoria'
     ]
   }
 ];
@@ -536,12 +537,12 @@ function initHeroViewport() {
   if (!container) return;
 
   const { scene, camera, renderer, controls } = createCadScene(container);
-  const presets = ['gear', 'flange', 'bracket', 'piston'];
+  const presets = ['bracket', 'gear', 'flange', 'piston'];
   const filenames = [
-    'CONJUNTO_REDUTOR_V2.SLDASM',
-    'FLANGE_ANSI_B16_5.SLDPRT',
-    'SUPORTE_ESTRUTURAL_FEA.SLDPRT',
-    'ATUADOR_EMBOLO_PINO.SLDASM'
+    'EST-01_SUPORTE_ICAMENTO.SLDPRT',
+    'MEC-02_TRANSMISSAO_NR12.SLDASM',
+    'TUB-03_ANCORAGEM_ESTRUTURAL.SLDPRT',
+    'AT-04_CONJUNTO_ATUADOR_FROTA.SLDASM'
   ];
   let currentIdx = 0;
   let currentGroup = null;
@@ -658,7 +659,7 @@ function initLabViewport() {
   window.loadLabPreset = loadPresetIntoLab;
 
   // Carrega peça inicial
-  loadPresetIntoLab('gear', 'PRT-01_ENGRENAGEM_MOD4.SLDPRT');
+  loadPresetIntoLab('bracket', 'EST-01_SUPORTE_ICAMENTO.SLDPRT');
 
   // Cliques nos presets da barra lateral
   document.querySelectorAll('.preset-btn').forEach((btn) => {
