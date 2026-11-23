@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>José Antonio Silva de Sá | Engenheiro Mecânico & Segurança do Trabalho</title>
-  <meta name="description" content="Portfólio de José Antonio Silva de Sá — Engenheiro Mecânico (UEMA) e Engenheiro de Segurança do Trabalho. Projetos em SolidWorks e Inventor, Cálculo Estrutural, Adequação NR-12 e Engenharia Diagnóstica em São Luís - MA." />
+  <meta name="description"
+    content="Portfólio de José Antonio Silva de Sá — Engenheiro Mecânico (UEMA) e Engenheiro de Segurança do Trabalho. Projetos em SolidWorks e Inventor, Cálculo Estrutural, Adequação NR-12 e Engenharia Diagnóstica em São Luís - MA." />
 
   <!-- Google Fonts: Space Grotesk (títulos técnicos), Inter (leitura) e JetBrains Mono (cotas/dados CAD) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@600;700&display=swap"
+    rel="stylesheet">
 
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -26,6 +30,7 @@
 
   <link rel="stylesheet" href="css/styles.css" />
 </head>
+
 <body>
   <!-- Fundo técnico tipo folha de desenho / grid CAD -->
   <div class="cad-grid-bg" aria-hidden="true"></div>
@@ -57,6 +62,10 @@
           <i data-lucide="box"></i>
           <span>Laboratório 3D (STL)</span>
         </button>
+        <button class="nav-tab" data-tab-target="cliente" id="nav-tab-cliente" hidden>
+          <i data-lucide="key-round"></i>
+          <span>Área do Cliente</span>
+        </button>
         <button class="nav-tab" data-tab-target="sobre">
           <i data-lucide="briefcase"></i>
           <span>Currículo & Formação</span>
@@ -68,10 +77,36 @@
       </nav>
 
       <div class="header-actions">
-        <a href="https://wa.me/5598984869252" target="_blank" rel="noopener" class="btn btn-primary btn-sm">
-          <i data-lucide="phone"></i>
-          (98) 9 8486-9252
-        </a>
+        <button class="btn btn-primary btn-sm" id="btn-unified-login" title="Entrar como Cliente ou Administrador">
+          <i data-lucide="key-round"></i>
+          <span id="unified-login-label">Entrar</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Barra de Controle do Modo Administrador (visível apenas quando logado) -->
+    <div class="admin-topbar" id="admin-topbar" hidden>
+      <div class="container admin-topbar-inner">
+        <div class="admin-badge-info">
+          <span class="admin-pill"><i data-lucide="shield-check"></i> NÍVEL DE ACESSO: ADMINISTRADOR</span>
+          <span class="mono-text">Bem-vindo, Eng. José Antonio — Você pode criar, editar e excluir projetos.</span>
+        </div>
+        <div class="admin-topbar-actions">
+          <button class="btn btn-primary btn-sm" id="btn-admin-new-project">
+            <i data-lucide="plus-circle"></i> Novo Projeto
+          </button>
+          <button class="btn btn-secondary btn-sm" id="btn-admin-export"
+            title="Exportar projetos cadastrados em arquivo JSON">
+            <i data-lucide="download"></i> Exportar JSON
+          </button>
+          <label class="btn btn-secondary btn-sm" for="admin-import-json" title="Importar projetos de um arquivo JSON">
+            <i data-lucide="upload"></i> Importar JSON
+            <input type="file" id="admin-import-json" accept=".json" hidden />
+          </label>
+          <button class="btn btn-outline btn-sm" id="btn-admin-logout">
+            <i data-lucide="log-out"></i> Sair do Admin
+          </button>
+        </div>
       </div>
     </div>
   </header>
@@ -94,7 +129,11 @@
             </h1>
 
             <p class="hero-description">
-              Olá, sou <strong>José Antonio Silva de Sá</strong> (<span class="mono-text">CREA NACIONAL - MA/PA 112340922-6</span>), sediado em <strong>São Luís – MA</strong>. Atuo na modelagem 3D em <strong>SolidWorks e Inventor</strong>, elaboração de memórias de cálculo estrutural (andaimes, dispositivos de içamento e suportes industriais), laudos técnicos de NR-12 (método HRN) e planos de manutenção (PCM) para máquinas industriais e pesadas.
+              Olá, sou <strong>José Antonio Silva de Sá</strong> (<span class="mono-text">CREA NACIONAL - MA/PA
+                112340922-6</span>), sediado em <strong>São Luís – MA</strong>. Atuo na modelagem 3D em
+              <strong>SolidWorks e Inventor</strong>, elaboração de memórias de cálculo estrutural (andaimes,
+              dispositivos de içamento e suportes industriais), laudos técnicos de NR-12 (método HRN) e planos de
+              manutenção (PCM) para máquinas industriais e pesadas.
             </p>
 
             <div class="hero-cta-group">
@@ -145,7 +184,8 @@
             </div>
 
             <div class="cad-viewport-wrapper">
-              <div id="hero-3d-canvas" class="cad-viewport" aria-label="Visualização 3D interativa de peça mecânica"></div>
+              <div id="hero-3d-canvas" class="cad-viewport" aria-label="Visualização 3D interativa de peça mecânica">
+              </div>
 
               <!-- HUD Técnico estilo SolidWorks -->
               <div class="cad-hud-top-left mono-text">
@@ -188,13 +228,19 @@
     =========================================== -->
     <section id="tab-projetos" class="tab-panel">
       <div class="container">
-        <div class="page-header">
+        <div class="page-header page-header-flex">
           <div>
             <span class="eyebrow">ACERVO TÉCNICO • SOLIDWORKS & INVENTOR</span>
             <h2 class="page-title">Projetos Mecânicos, Estruturas & Laudos</h2>
             <p class="page-lead">
-              Projetos desenvolvidos com foco em validação estrutural, dispositivos de içamento, suportes industriais, adequação NR-12 (HRN) e confiabilidade de maquinários pesados.
+              Projetos desenvolvidos com foco em validação estrutural, dispositivos de içamento, suportes industriais,
+              adequação NR-12 (HRN) e confiabilidade de maquinários pesados.
             </p>
+          </div>
+          <div class="admin-only-action" id="projects-header-admin-btn" hidden>
+            <button class="btn btn-primary" id="btn-projects-add">
+              <i data-lucide="plus"></i> Adicionar Projeto
+            </button>
           </div>
         </div>
 
@@ -230,7 +276,9 @@
             <span class="eyebrow">INSPEÇÃO CAD NO NAVEGADOR</span>
             <h2 class="page-title">Visualizador 3D — SolidWorks & Inventor</h2>
             <p class="page-lead">
-              Inspecione os modelos 3D dos projetos ou carregue qualquer arquivo <code>.STL</code> exportado diretamente do <strong>SolidWorks</strong> ou <strong>Autodesk Inventor</strong> (<em>Arquivo &rarr; Salvar como &rarr; STL</em>).
+              Inspecione os modelos 3D dos projetos ou carregue qualquer arquivo <code>.STL</code> exportado diretamente
+              do <strong>SolidWorks</strong> ou <strong>Autodesk Inventor</strong> (<em>Arquivo &rarr; Salvar como
+                &rarr; STL</em>).
             </p>
           </div>
         </div>
@@ -268,7 +316,8 @@
                 <i data-lucide="upload"></i> Carregar do SolidWorks (.STL)
               </h3>
               <p class="sidebar-help">
-                Exporte sua peça do SolidWorks ou Inventor no formato <strong>.STL</strong> e selecione abaixo para visualizar em tempo real:
+                Exporte sua peça do SolidWorks ou Inventor no formato <strong>.STL</strong> e selecione abaixo para
+                visualizar em tempo real:
               </p>
               <label for="stl-file-input" class="upload-dropzone" id="stl-dropzone">
                 <i data-lucide="file-up"></i>
@@ -297,10 +346,14 @@
               <div class="color-Finish-picker">
                 <span class="mono-text">ACABAMENTO DO MATERIAL:</span>
                 <div class="swatch-row">
-                  <button class="material-swatch active" data-color="#cdd2d5" title="Aço Usinado (#cdd2d5)" style="background:#cdd2d5"></button>
-                  <button class="material-swatch" data-color="#df6112" title="Laranja Segurança NR-12 (#df6112)" style="background:#df6112"></button>
-                  <button class="material-swatch" data-color="#4a5455" title="Aço Estrutural Fosfatizado (#4a5455)" style="background:#4a5455"></button>
-                  <button class="material-swatch" data-color="#38bdf8" title="Anodizado Azul CAD" style="background:#38bdf8"></button>
+                  <button class="material-swatch active" data-color="#cdd2d5" title="Aço Usinado (#cdd2d5)"
+                    style="background:#cdd2d5"></button>
+                  <button class="material-swatch" data-color="#df6112" title="Laranja Segurança NR-12 (#df6112)"
+                    style="background:#df6112"></button>
+                  <button class="material-swatch" data-color="#4a5455" title="Aço Estrutural Fosfatizado (#4a5455)"
+                    style="background:#4a5455"></button>
+                  <button class="material-swatch" data-color="#38bdf8" title="Anodizado Azul CAD"
+                    style="background:#38bdf8"></button>
                 </div>
               </div>
             </div>
@@ -337,6 +390,57 @@
     </section>
 
     <!-- ==========================================
+         ABA 3.5: ÁREA DO CLIENTE (PORTAL DE ACOMPANHAMENTO & LAUDOS)
+    =========================================== -->
+    <section id="tab-cliente" class="tab-panel">
+      <div class="container">
+        <div class="page-header page-header-flex">
+          <div>
+            <span class="eyebrow">AMBIENTE SEGURO • ACOMPANHAMENTO TÉCNICO</span>
+            <h2 class="page-title">Portal do Cliente & Entrega de Documentação</h2>
+            <p class="page-lead">
+              Acesse com o código fornecido pelo <strong>Eng. José Antonio</strong> para acompanhar o andamento dos seus
+              projetos em SolidWorks/Inventor, consultar memórias de cálculo estrutural, laudos NR-12 (HRN) e baixar
+              pacotes técnicos.
+            </p>
+          </div>
+          <div id="client-logout-wrap" hidden>
+            <button class="btn btn-outline btn-sm" id="btn-client-logout">
+              <i data-lucide="log-out"></i> Encerrar Sessão do Cliente
+            </button>
+          </div>
+        </div>
+
+        <!-- Painel Desbloqueado do Cliente (Exibido direto pois a aba só aparece após login) -->
+        <div class="client-dashboard" id="client-dashboard-box">
+          <div class="client-welcome-banner">
+            <div>
+              <span class="admin-pill"><i data-lucide="check-circle-2"></i> ACESSO CLIENTE AUTORIZADO</span>
+              <h3 id="client-welcome-title" style="margin-top:0.45rem;">Painel Técnico do Cliente</h3>
+              <p class="mono-text" id="client-welcome-sub">
+                Responsável Técnico: Eng. José Antonio Silva de Sá • CREA NACIONAL MA/PA 112340922-6
+              </p>
+            </div>
+            <div class="client-banner-actions">
+              <button class="btn btn-secondary btn-sm" data-tab-target="visualizador">
+                <i data-lucide="rotate-3d"></i> Abrir Laboratório 3D
+              </button>
+              <a href="https://wa.me/5598984869252?text=Ol%C3%A1%20Eng.%20Jos%C3%A9%20Antonio,%20estou%20no%20Portal%20do%20Cliente%20e%20gostaria%20de%20falar%20sobre%20o%20projeto."
+                target="_blank" rel="noopener" class="btn btn-primary btn-sm">
+                <i data-lucide="message-square"></i> Falar com Eng. José no WhatsApp
+              </a>
+            </div>
+          </div>
+
+          <!-- Lista de Projetos e Entregas Liberadas para o Cliente -->
+          <div class="client-projects-list" id="client-projects-container">
+            <!-- Renderizado dinamicamente via JS -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
          ABA 4: CURRÍCULO, EXPERIÊNCIA & FORMAÇÃO
     =========================================== -->
     <section id="tab-sobre" class="tab-panel">
@@ -346,7 +450,11 @@
             <span class="eyebrow">CURRÍCULO TÉCNICO • CREA NACIONAL - MA/PA 112340922-6</span>
             <h2 class="page-title">José Antonio Silva de Sá</h2>
             <p class="page-lead">
-              Engenheiro Mecânico graduado pela <strong>UEMA</strong>, com pós-graduação em andamento em <strong>Engenharia de Segurança do Trabalho</strong> e em <strong>Engenharia de Construções em Estruturas Metálicas</strong>. Experiência prática na elaboração de planos de manutenção, análise estrutural e documentação técnica (memoriais de cálculo e laudos) para máquinas industriais e pesadas, atuando na gestão de processos de engenharia e liderança de estagiários.
+              Engenheiro Mecânico graduado pela <strong>UEMA</strong>, com pós-graduação em andamento em
+              <strong>Engenharia de Segurança do Trabalho</strong> e em <strong>Engenharia de Construções em Estruturas
+                Metálicas</strong>. Experiência prática na elaboração de planos de manutenção, análise estrutural e
+              documentação técnica (memoriais de cálculo e laudos) para máquinas industriais e pesadas, atuando na
+              gestão de processos de engenharia e liderança de estagiários.
             </p>
           </div>
         </div>
@@ -372,16 +480,23 @@
               </div>
               <ul class="timeline-bullets">
                 <li>
-                  <strong>Atuação Técnica de Engenharia:</strong> Foco em engenharia mecânica e segurança operacional, indo além das rotinas administrativas logísticas, com gestão de processos de engenharia e liderança de estagiários.
+                  <strong>Atuação Técnica de Engenharia:</strong> Foco em engenharia mecânica e segurança operacional,
+                  indo além das rotinas administrativas logísticas, com gestão de processos de engenharia e liderança de
+                  estagiários.
                 </li>
                 <li>
-                  <strong>Engenharia Diagnóstica e Segurança:</strong> Elaboração de laudos técnicos operacionais e Laudos de Apreciação de Risco utilizando o método <strong>HRN (Hazard Rating Number)</strong> para adequação de máquinas à <strong>NR-12</strong>.
+                  <strong>Engenharia Diagnóstica e Segurança:</strong> Elaboração de laudos técnicos operacionais e
+                  Laudos de Apreciação de Risco utilizando o método <strong>HRN (Hazard Rating Number)</strong> para
+                  adequação de máquinas à <strong>NR-12</strong>.
                 </li>
                 <li>
-                  <strong>Cálculo Estrutural:</strong> Desenvolvimento de memórias de cálculo detalhadas para validação de estruturas metálicas diversas, incluindo <strong>andaimes, dispositivos de içamento e suportes industriais</strong>.
+                  <strong>Cálculo Estrutural:</strong> Desenvolvimento de memórias de cálculo detalhadas para validação
+                  de estruturas metálicas diversas, incluindo <strong>andaimes, dispositivos de içamento e suportes
+                    industriais</strong>.
                 </li>
                 <li>
-                  <strong>Gestão de Ativos (PCM):</strong> Criação e implementação de planos de manutenção preventiva e corretiva, visando aumentar a confiabilidade e disponibilidade da frota e maquinários.
+                  <strong>Gestão de Ativos (PCM):</strong> Criação e implementação de planos de manutenção preventiva e
+                  corretiva, visando aumentar a confiabilidade e disponibilidade da frota e maquinários.
                 </li>
               </ul>
             </div>
@@ -451,7 +566,8 @@
           <div class="skill-card">
             <div class="skill-icon"><i data-lucide="box"></i></div>
             <h3>Softwares CAD & Engenharia</h3>
-            <p>Modelagem paramétrica 3D, detalhamento técnico executivo, folhas de especificação e controle de engenharia.</p>
+            <p>Modelagem paramétrica 3D, detalhamento técnico executivo, folhas de especificação e controle de
+              engenharia.</p>
             <ul class="tech-list mono-text">
               <li>SolidWorks (Modelagem 3D, Montagens, Estruturas)</li>
               <li>Autodesk Inventor (Peças, Conjuntos & Detalhamento)</li>
@@ -462,7 +578,8 @@
           <div class="skill-card">
             <div class="skill-icon"><i data-lucide="calculator"></i></div>
             <h3>Cálculo & Validação Estrutural</h3>
-            <p>Elaboração de memoriais de cálculo e validação mecânica para equipamentos e estruturas metálicas industriais.</p>
+            <p>Elaboração de memoriais de cálculo e validação mecânica para equipamentos e estruturas metálicas
+              industriais.</p>
             <ul class="tech-list mono-text">
               <li>Andaimes & Plataformas de Trabalho</li>
               <li>Dispositivos de Içamento (Olhais, Balancins, Suportes)</li>
@@ -473,7 +590,8 @@
           <div class="skill-card">
             <div class="skill-icon"><i data-lucide="hard-hat"></i></div>
             <h3>Engenharia Diagnóstica, NR-12 & PCM</h3>
-            <p>Adequação de segurança de máquinas, gestão da manutenção e aumento da disponibilidade operacional de frotas e ativos.</p>
+            <p>Adequação de segurança de máquinas, gestão da manutenção e aumento da disponibilidade operacional de
+              frotas e ativos.</p>
             <ul class="tech-list mono-text">
               <li>Laudos Técnicos & Análise de Risco HRN (NR-12)</li>
               <li>Supervisão em Trabalho em Altura (NR-35)</li>
@@ -494,7 +612,9 @@
             <span class="eyebrow">CONTATO PROFISSIONAL • SÃO LUÍS - MA</span>
             <h2 class="page-title">Vamos conversar sobre o seu projeto ou demanda técnica?</h2>
             <p class="page-lead">
-              Disponível para projetos em <strong>SolidWorks / Inventor</strong>, memórias de cálculo estrutural, laudos técnicos de NR-12 (HRN), planos de manutenção (PCM) e atuação em Engenharia Mecânica e de Segurança do Trabalho.
+              Disponível para projetos em <strong>SolidWorks / Inventor</strong>, memórias de cálculo estrutural, laudos
+              técnicos de NR-12 (HRN), planos de manutenção (PCM) e atuação em Engenharia Mecânica e de Segurança do
+              Trabalho.
             </p>
 
             <div class="contact-links">
@@ -512,7 +632,8 @@
                   <strong>joseantonio3108@gmail.com</strong>
                 </div>
               </a>
-              <a href="https://www.linkedin.com/in/jose-antonio-silva" target="_blank" rel="noopener" class="contact-item">
+              <a href="https://www.linkedin.com/in/jose-antonio-silva" target="_blank" rel="noopener"
+                class="contact-item">
                 <i data-lucide="linkedin"></i>
                 <div>
                   <span class="mono-text">LINKEDIN</span>
@@ -551,7 +672,8 @@
             </div>
             <div class="form-group">
               <label for="mensagem">Descrição da Necessidade</label>
-              <textarea id="mensagem" rows="4" placeholder="Descreva brevemente o projeto, equipamento ou estrutura..." required></textarea>
+              <textarea id="mensagem" rows="4" placeholder="Descreva brevemente o projeto, equipamento ou estrutura..."
+                required></textarea>
             </div>
             <button type="submit" class="btn btn-primary btn-full">
               <i data-lucide="send"></i> Enviar Mensagem
@@ -586,6 +708,11 @@
           <h4 class="mono-text">ENTREGÁVEIS DE ENGENHARIA:</h4>
           <ul id="modal-project-deliverables"></ul>
         </div>
+
+        <!-- Bloco Exclusivo de Documentação Técnica do Cliente (Memorial / Laudo / Arquivos) -->
+        <div class="modal-client-vault" id="modal-client-vault">
+          <!-- Preenchido via JS de acordo com o nível de acesso (Visitante vs Cliente/Admin) -->
+        </div>
       </div>
 
       <div class="modal-footer">
@@ -594,6 +721,253 @@
           <i data-lucide="rotate-3d"></i> Inspecionar Peça no Visualizador 3D
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       JANELA ÚNICA DE LOGIN (CLIENTE OU ADMINISTRADOR)
+  =========================================== -->
+  <div class="project-modal-backdrop" id="unified-login-modal" aria-hidden="true">
+    <div class="project-modal-content admin-modal-sm" role="dialog" aria-modal="true"
+      aria-labelledby="unified-login-title">
+      <div class="modal-header">
+        <div>
+          <span class="mono-text text-accent">PORTAL DE ACESSO RESTRITO</span>
+          <h3 id="unified-login-title">Entrar no Sistema</h3>
+        </div>
+        <button class="modal-close" id="unified-login-close" aria-label="Fechar janela de login">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+
+      <!-- Seletor de Perfil dentro da Janela de Login -->
+      <div class="login-role-switcher" role="tablist" aria-label="Escolher tipo de acesso">
+        <button type="button" class="login-role-tab active" data-login-role="cliente" id="tab-role-cliente">
+          <i data-lucide="user-check"></i>
+          <span>Sou Cliente</span>
+        </button>
+        <button type="button" class="login-role-tab" data-login-role="admin" id="tab-role-admin">
+          <i data-lucide="shield-check"></i>
+          <span>Administrador (José)</span>
+        </button>
+      </div>
+
+      <!-- Formulário 1: Login do Cliente -->
+      <form id="client-login-form" class="login-role-pane active">
+        <p class="modal-desc">
+          Insira o código fornecido pelo <strong>Eng. José Antonio</strong> para liberar a aba <strong>Área do Cliente</strong>, acompanhar o andamento do projeto e baixar memórias de cálculo e laudos.
+        </p>
+
+        <div class="form-group">
+          <label for="client-name-input">Empresa / Nome do Cliente</label>
+          <input type="text" id="client-name-input" placeholder="Ex.: Lucena Logística / Engenharia" required />
+        </div>
+
+        <div class="form-group">
+          <label for="client-code-input">Código de Acesso do Projeto</label>
+          <input type="password" id="client-code-input" placeholder="Digite o código do projeto" required />
+          <small class="mono-text" style="display:block;margin-top:0.35rem;color:var(--text-muted);">
+            Código de demonstração: <code>CLIENTE2026</code>
+          </small>
+        </div>
+
+        <p class="admin-error-msg mono-text" id="client-login-error" hidden>
+          Código de cliente inválido. Utilize CLIENTE2026 ou o código específico do seu projeto.
+        </p>
+
+        <div class="modal-footer" style="margin-top:1.25rem;">
+          <button type="button" class="btn btn-secondary js-close-unified-login">Cancelar</button>
+          <button type="submit" class="btn btn-primary">
+            <i data-lucide="unlock"></i> Liberar Área do Cliente
+          </button>
+        </div>
+      </form>
+
+      <!-- Formulário 2: Login do Administrador (Eng. José) -->
+      <form id="admin-login-form" class="login-role-pane" hidden>
+        <p class="modal-desc">
+          Acesso exclusivo do <strong>Eng. José Antonio</strong> para cadastrar novos projetos, editar fichas técnicas, definir códigos de clientes e gerenciar o portfólio.
+        </p>
+
+        <div class="form-group">
+          <label for="admin-user">Usuário</label>
+          <input type="text" id="admin-user" placeholder="jose.admin" value="jose.admin" required />
+        </div>
+
+        <div class="form-group">
+          <label for="admin-pass">Senha de Administrador</label>
+          <input type="password" id="admin-pass" placeholder="Digite a senha de administrador" required />
+          <small class="mono-text" style="display:block;margin-top:0.35rem;color:var(--text-muted);">
+            Senha padrão: <code>crea112340</code>
+          </small>
+        </div>
+
+        <p class="admin-error-msg mono-text" id="admin-login-error" hidden>
+          Credenciais inválidas. Verifique o usuário e a senha.
+        </p>
+
+        <div class="modal-footer" style="margin-top:1.25rem;">
+          <button type="button" class="btn btn-secondary js-close-unified-login">Cancelar</button>
+          <button type="submit" class="btn btn-primary">
+            <i data-lucide="shield-check"></i> Entrar como Admin
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL DE CADASTRO / EDIÇÃO DE PROJETO (ADMIN)
+  =========================================== -->
+  <div class="project-modal-backdrop" id="admin-project-modal" aria-hidden="true">
+    <div class="project-modal-content admin-modal-lg" role="dialog" aria-modal="true"
+      aria-labelledby="admin-form-title">
+      <div class="modal-header">
+        <div>
+          <span class="mono-text text-accent" id="admin-form-subtitle">GERENCIAMENTO DE ACERVO</span>
+          <h3 id="admin-form-title">Novo Projeto de Engenharia</h3>
+        </div>
+        <button class="modal-close" id="admin-project-close" aria-label="Fechar formulário">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+
+      <form id="admin-project-form" class="admin-project-form">
+        <input type="hidden" id="proj-id" />
+
+        <div class="admin-form-grid">
+          <div class="form-group">
+            <label for="proj-code">Código Técnico do Projeto *</label>
+            <input type="text" id="proj-code" placeholder="Ex.: EST-SW-005" required />
+          </div>
+
+          <div class="form-group">
+            <label for="proj-category">Categoria *</label>
+            <select id="proj-category" required>
+              <option value="estruturas">Cálculo Estrutural & Içamento</option>
+              <option value="maquinas">Máquinas, NR-12 & Dispositivos</option>
+              <option value="simulacao">Manutenção (PCM) & Diagnóstica</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="proj-title">Título do Projeto *</label>
+          <input type="text" id="proj-title" placeholder="Ex.: Memorial de Cálculo e Modelagem 3D de Pórtico Metálico"
+            required />
+        </div>
+
+        <div class="admin-form-grid">
+          <div class="form-group">
+            <label for="proj-software">Software / Metodologia *</label>
+            <input type="text" id="proj-software" placeholder="Ex.: SolidWorks 3D + NBR 8800" required />
+          </div>
+
+          <div class="form-group">
+            <label for="proj-cadfile">Nome do Arquivo CAD *</label>
+            <input type="text" id="proj-cadfile" placeholder="Ex.: PORTICO_2TON.SLDASM" required />
+          </div>
+        </div>
+
+        <div class="admin-form-grid">
+          <div class="form-group">
+            <label for="proj-preset3d">Representação 3D Padrão</label>
+            <select id="proj-preset3d">
+              <option value="bracket">Suporte Estrutural / Olhal de Içamento</option>
+              <option value="gear">Engrenagem / Transmissão Mecânica</option>
+              <option value="flange">Flange Industrial / Ponto de Ancoragem</option>
+              <option value="piston">Conjunto Êmbolo / Atuador Hidráulico</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="proj-image-input">Imagem / Render do SolidWorks (Opcional)</label>
+            <input type="file" id="proj-image-input" accept="image/*" />
+            <small class="mono-text" id="proj-image-status">Se não enviar, será exibido o blueprint técnico
+              padrão.</small>
+          </div>
+        </div>
+
+        <div class="admin-specs-fieldset">
+          <span class="mono-text text-accent">CONTROLE DO PORTAL DO CLIENTE (ACESSO & ANDAMENTO):</span>
+          <div class="admin-form-grid" style="margin-top:0.55rem;">
+            <div class="form-group">
+              <label for="proj-visibility">Visibilidade do Projeto</label>
+              <select id="proj-visibility">
+                <option value="publico">Público (Visível a todos + Laudo completo p/ Cliente)</option>
+                <option value="restrito">Exclusivo Cliente (Visível apenas para Clientes e Admin)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="proj-client-code">Código do Cliente (Opcional)</label>
+              <input type="text" id="proj-client-code" placeholder="Ex.: CLIENTE2026 ou LUCENA2026"
+                value="CLIENTE2026" />
+            </div>
+            <div class="form-group">
+              <label for="proj-progress">Progresso da Entrega (%)</label>
+              <input type="number" id="proj-progress" min="0" max="100" value="100" required />
+            </div>
+            <div class="form-group">
+              <label for="proj-stage">Status / Etapa Atual</label>
+              <select id="proj-stage">
+                <option value="Concluído & Validado (ART / Laudo Emitido)">Concluído & Validado (ART / Laudo Emitido)
+                </option>
+                <option value="Em Modelagem 3D (SolidWorks / Inventor)">Em Modelagem 3D (SolidWorks / Inventor)</option>
+                <option value="Em Cálculo Estrutural / Análise HRN">Em Cálculo Estrutural / Análise HRN</option>
+                <option value="Aguardando Aprovação do Cliente">Aguardando Aprovação do Cliente</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label for="proj-client-notes">Parecer Técnico / Resumo do Laudo ou Memorial (Exclusivo Cliente)</label>
+            <textarea id="proj-client-notes" rows="2"
+              placeholder="Ex.: Fator de Segurança validado FS = 2,85 conforme NBR 8800. Arquivos STEP, DWG e Memorial PDF liberados para fabricação."></textarea>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="proj-summary">Resumo Técnico do Projeto *</label>
+          <textarea id="proj-summary" rows="3"
+            placeholder="Descreva o objetivo do projeto, normas aplicadas e resultados alcançados..."
+            required></textarea>
+        </div>
+
+        <div class="admin-specs-fieldset">
+          <span class="mono-text text-accent">ESPECIFICAÇÕES TÉCNICAS (FICHA DO CARD):</span>
+          <div class="admin-form-grid" style="margin-top:0.55rem;">
+            <div class="form-group">
+              <label for="proj-spec-1">Material / Ativo</label>
+              <input type="text" id="proj-spec-1" placeholder="Ex.: Aço ASTM A36 / SAE 1020" required />
+            </div>
+            <div class="form-group">
+              <label for="proj-spec-2">Norma Técnica</label>
+              <input type="text" id="proj-spec-2" placeholder="Ex.: ABNT NBR 8800 / NR-12" required />
+            </div>
+            <div class="form-group">
+              <label for="proj-spec-3">Verificação / Metodologia</label>
+              <input type="text" id="proj-spec-3" placeholder="Ex.: Von Mises / Fator de Segurança > 2,5" required />
+            </div>
+            <div class="form-group">
+              <label for="proj-spec-4">Ferramentas / Aplicação</label>
+              <input type="text" id="proj-spec-4" placeholder="Ex.: SolidWorks & Memorial Excel" required />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="proj-deliverables">Entregáveis de Engenharia (um item por linha) *</label>
+          <textarea id="proj-deliverables" rows="4"
+            placeholder="Modelagem 3D paramétrica em SolidWorks&#10;Memória de cálculo estrutural detalhada&#10;Detalhamento executivo 2D e lista de materiais (BOM)"
+            required></textarea>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="admin-project-cancel">Cancelar</button>
+          <button type="submit" class="btn btn-primary">
+            <i data-lucide="save"></i> Salvar Projeto no Portfólio
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -613,4 +987,5 @@
 
   <script type="module" src="js/main.js"></script>
 </body>
+
 </html>

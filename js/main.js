@@ -3,9 +3,13 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { STLLoader } from 'three/addons/loaders/STLLoader.js';
 
 /* ==========================================================================
-   1. BANCO DE DADOS DE PROJETOS (FÁCIL DE EDITAR E ADICIONAR NOVOS)
+   1. BANCO DE DADOS DE PROJETOS & PERSISTÊNCIA (NÍVEL DE ACESSO ADMIN)
    ========================================================================== */
-const PROJECTS_DATA = [
+const STORAGE_KEY_PROJECTS = 'jose_portfolio_projects_v2';
+const STORAGE_KEY_ADMIN_SESSION = 'jose_portfolio_admin_logged';
+const STORAGE_KEY_CLIENT_SESSION = 'jose_portfolio_client_session';
+
+const DEFAULT_PROJECTS_DATA = [
   {
     id: 'prj-icamento',
     code: 'EST-SW-001',
@@ -14,6 +18,12 @@ const PROJECTS_DATA = [
     software: 'SolidWorks 3D + Memória de Cálculo',
     preset3d: 'bracket',
     cadFile: 'EST-01_SUPORTE_ICAMENTO.SLDPRT',
+    visibility: 'publico',
+    clientCode: 'CLIENTE2026',
+    progress: 100,
+    stage: 'Concluído & Validado (ART / Laudo Emitido)',
+    clientNotes:
+      'Memória de cálculo validada segundo ABNT NBR 8800 e ASME BTH-1. Tensão máxima equivalente (Von Mises) dentro do limite admissível com Fator de Segurança FS = 2,85. Pacote CAD (.SLDPRT / .STEP) e folha executiva liberados.',
     summary:
       'Desenvolvimento de projeto 3D e memória de cálculo detalhada para validação estrutural de dispositivo de içamento e suporte metálico submetido a cargas críticas de operação.',
     specs: {
@@ -37,6 +47,12 @@ const PROJECTS_DATA = [
     software: 'SolidWorks / Inventor + Método HRN',
     preset3d: 'gear',
     cadFile: 'MEC-02_TRANSMISSAO_NR12.SLDASM',
+    visibility: 'publico',
+    clientCode: 'CLIENTE2026',
+    progress: 100,
+    stage: 'Concluído & Validado (ART / Laudo Emitido)',
+    clientNotes:
+      'Apreciação de Riscos concluída pelo método HRN: redução do índice de risco de HRN Inicial = 65 (Alto Risco) para HRN Residual = 1,5 (Risco Desprezível) após instalação das proteções fixas e intertravadas modeladas em SolidWorks.',
     summary:
       'Engenharia diagnóstica, elaboração de Laudo de Apreciação de Riscos pelo método HRN (Hazard Rating Number) e concepção de enclausuramento/proteções físicas para transmissões de força.',
     specs: {
@@ -60,6 +76,12 @@ const PROJECTS_DATA = [
     software: 'Inventor / SolidWorks + Cálculo Estrutural',
     preset3d: 'flange',
     cadFile: 'TUB-03_ANCORAGEM_ESTRUTURAL.SLDPRT',
+    visibility: 'publico',
+    clientCode: 'CLIENTE2026',
+    progress: 100,
+    stage: 'Concluído & Validado (ART / Laudo Emitido)',
+    clientNotes:
+      'Estrutura de andaime e ponto de ancoragem verificados contra flambagem crítica de Euler e tração axial de impacto conforme NR-35 / NR-18. Estabilidade global aprovada para operação em altura.',
     summary:
       'Elaboração de memória de cálculo e verificação de estabilidade, flambagem e resistência para estruturas de andaimes, plataformas de acesso e pontos de ancoragem em altura.',
     specs: {
@@ -82,6 +104,12 @@ const PROJECTS_DATA = [
     software: 'SolidWorks + Excel Avançado (PCM)',
     preset3d: 'piston',
     cadFile: 'AT-04_CONJUNTO_ATUADOR_FROTA.SLDASM',
+    visibility: 'publico',
+    clientCode: 'CLIENTE2026',
+    progress: 90,
+    stage: 'Em Cálculo Estrutural / Análise HRN',
+    clientNotes:
+      'Planos preventivos implantados para frota e equipamentos pesados. Redesenho 3D do conjunto de atuador hidráulico concluído para nacionalização de sobressalentes e redução de MTTR.',
     summary:
       'Estruturação e implementação de planos de manutenção preventiva e corretiva para equipamentos pesados e frota logística, aliados ao redesenho CAD de componentes críticos.',
     specs: {
@@ -97,6 +125,48 @@ const PROJECTS_DATA = [
     ]
   }
 ];
+
+function loadProjectsFromStorage() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY_PROJECTS);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch (e) {
+    console.warn('Erro ao ler projetos salvos:', e);
+  }
+  return [...DEFAULT_PROJECTS_DATA];
+}
+
+function saveProjectsToStorage(list) {
+  try {
+    localStorage.setItem(STORAGE_KEY_PROJECTS, JSON.stringify(list));
+  } catch (e) {
+    console.warn('Erro ao salvar projetos no navegador:', e);
+  }
+}
+
+let PROJECTS_DATA = loadProjectsFromStorage();
+let isAdminLoggedIn = sessionStorage.getItem(STORAGE_KEY_ADMIN_SESSION) === 'true';
+let clientSession = (() => {
+  try {
+    const raw = sessionStorage.getItem(STORAGE_KEY_CLIENT_SESSION);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+})();
+
+function hasClientOrAdminAccess(project = null) {
+  if (isAdminLoggedIn) return true;
+  if (!clientSession) return false;
+  if (!project || !project.clientCode) return true;
+  return (
+    clientSession.code === 'CLIENTE2026' ||
+    clientSession.code === project.clientCode.toUpperCase()
+  );
+}
 
 /* ==========================================================================
    2. NAVEGAÇÃO POR ABAS
@@ -134,14 +204,25 @@ function initTabs() {
 function createProjectCardHTML(project) {
   const specEntries = Object.entries(project.specs).slice(0, 4);
 
-  return `
-    <article class="project-card" data-category="${project.category}">
-      <div class="project-blueprint-thumb">
-        <div class="thumb-top-row">
-          <span class="project-code-badge">${project.code}</span>
-          <span class="project-software-badge">${project.software}</span>
+  const adminToolbarHTML = isAdminLoggedIn
+    ? `
+      <div class="admin-card-toolbar">
+        <span class="mono-text">CONTROLE ADMIN</span>
+        <div class="admin-card-btns">
+          <button type="button" class="btn-admin-card js-admin-edit" data-id="${project.id}">
+            Editar
+          </button>
+          <button type="button" class="btn-admin-card danger js-admin-delete" data-id="${project.id}">
+            Excluir
+          </button>
         </div>
+      </div>
+    `
+    : '';
 
+  const centerVisualHTML = project.imageUrl
+    ? `<img src="${project.imageUrl}" alt="${project.title}" class="project-custom-thumb" />`
+    : `
         <div class="thumb-svg-art">
           <svg width="78" height="78" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25">
             <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
@@ -149,6 +230,18 @@ function createProjectCardHTML(project) {
             <line x1="12" y1="22.08" x2="12" y2="12"></line>
           </svg>
         </div>
+      `;
+
+  return `
+    <article class="project-card" data-category="${project.category}">
+      ${adminToolbarHTML}
+      <div class="project-blueprint-thumb">
+        <div class="thumb-top-row">
+          <span class="project-code-badge">${project.code}</span>
+          <span class="project-software-badge">${project.software}</span>
+        </div>
+
+        ${centerVisualHTML}
 
         <div class="thumb-bottom-row">
           <span>ARQUIVO: ${project.cadFile}</span>
@@ -162,15 +255,15 @@ function createProjectCardHTML(project) {
 
         <div class="project-specs-mini">
           ${specEntries
-            .map(
-              ([label, val]) => `
+      .map(
+        ([label, val]) => `
             <div class="spec-cell">
               <span>${label.toUpperCase()}</span>
               <strong>${val}</strong>
             </div>
           `
-            )
-            .join('')}
+      )
+      .join('')}
         </div>
 
         <div class="project-actions">
@@ -191,17 +284,25 @@ function renderProjects(filter = 'todos', searchQuery = '') {
   const featuredGrid = document.getElementById('home-featured-grid');
   const badge = document.getElementById('project-count-badge');
 
-  if (badge) badge.textContent = PROJECTS_DATA.length;
+  // Filtra visibilidade: projetos 'restrito' só aparecem para Cliente autenticado ou Admin
+  const visibleProjects = PROJECTS_DATA.filter((p) => {
+    if (p.visibility === 'restrito') {
+      return hasClientOrAdminAccess(p);
+    }
+    return true;
+  });
 
-  // Renderiza destaques na Home (primeiros 3)
+  if (badge) badge.textContent = visibleProjects.length;
+
+  // Renderiza destaques na Home (primeiros 3 visíveis)
   if (featuredGrid) {
-    featuredGrid.innerHTML = PROJECTS_DATA.slice(0, 3).map(createProjectCardHTML).join('');
+    featuredGrid.innerHTML = visibleProjects.slice(0, 3).map(createProjectCardHTML).join('');
   }
 
   // Filtra projetos na aba Projetos
   if (mainGrid) {
     const query = searchQuery.trim().toLowerCase();
-    const filtered = PROJECTS_DATA.filter((p) => {
+    const filtered = visibleProjects.filter((p) => {
       const matchesCategory = filter === 'todos' || p.category === filter;
       const matchesSearch =
         !query ||
@@ -236,6 +337,14 @@ function bindProjectCardEvents() {
       }
     };
   });
+
+  document.querySelectorAll('.js-admin-edit').forEach((btn) => {
+    btn.onclick = () => openAdminProjectForm(btn.dataset.id);
+  });
+
+  document.querySelectorAll('.js-admin-delete').forEach((btn) => {
+    btn.onclick = () => deleteAdminProject(btn.dataset.id);
+  });
 }
 
 function openProjectModal(projectId) {
@@ -261,6 +370,48 @@ function openProjectModal(projectId) {
   document.getElementById('modal-project-deliverables').innerHTML = proj.deliverables
     .map((item) => `<li>${item}</li>`)
     .join('');
+
+  const vaultEl = document.getElementById('modal-client-vault');
+  if (vaultEl) {
+    if (hasClientOrAdminAccess(proj)) {
+      vaultEl.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.5rem;">
+          <span class="mono-text text-accent">✔ DOCUMENTAÇÃO DO CLIENTE LIBERADA (${proj.progress ?? 100}% CONCLUÍDO)</span>
+          <span class="client-stage-badge">${proj.stage || 'Concluído & Validado'}</span>
+        </div>
+        <p style="font-size:0.86rem;margin-bottom:0.75rem;">
+          <strong>Parecer Técnico / Laudo:</strong> ${
+            proj.clientNotes ||
+            'Memorial de cálculo e modelagem 3D validados conforme normas técnicas aplicáveis.'
+          }
+        </p>
+        <button type="button" class="btn btn-secondary btn-sm" id="modal-download-dossier-btn">
+          Baixar Dossiê Técnico / Memorial (${proj.code}.txt)
+        </button>
+      `;
+      document.getElementById('modal-download-dossier-btn')?.addEventListener('click', () => {
+        downloadClientDossier(proj);
+      });
+    } else {
+      vaultEl.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+          <div>
+            <span class="mono-text text-accent">🔒 LAUDO COMPLETO & ARQUIVOS NATIVOS DO CLIENTE</span>
+            <p style="font-size:0.83rem;margin-top:0.2rem;">
+              O memorial de cálculo detalhado, matriz HRN e pacote CAD estão disponíveis na Área do Cliente.
+            </p>
+          </div>
+          <button type="button" class="btn btn-outline btn-sm" id="modal-go-client-portal">
+            Desbloquear na Área do Cliente
+          </button>
+        </div>
+      `;
+      document.getElementById('modal-go-client-portal')?.addEventListener('click', () => {
+        modal.classList.remove('open');
+        openUnifiedLoginModal('cliente');
+      });
+    }
+  }
 
   const open3dBtn = document.getElementById('modal-open-3d-btn');
   open3dBtn.onclick = () => {
@@ -800,7 +951,521 @@ function initLabViewport() {
 }
 
 /* ==========================================================================
-   6. FORMULÁRIO DE CONTATO & INICIALIZAÇÃO GERAL
+   6. SISTEMA DE NÍVEL DE ACESSO (PAINEL ADMINISTRADOR)
+   ========================================================================== */
+const ADMIN_CREDENTIALS = {
+  user: 'jose.admin',
+  pass: 'crea112340'
+};
+
+let pendingProjectImageBase64 = null;
+
+function setUnifiedLoginRole(role = 'cliente') {
+  const clientTab = document.getElementById('tab-role-cliente');
+  const adminTab = document.getElementById('tab-role-admin');
+  const clientForm = document.getElementById('client-login-form');
+  const adminForm = document.getElementById('admin-login-form');
+
+  const isClient = role === 'cliente';
+  clientTab?.classList.toggle('active', isClient);
+  adminTab?.classList.toggle('active', !isClient);
+  if (clientForm) clientForm.hidden = !isClient;
+  if (adminForm) adminForm.hidden = isClient;
+}
+
+function openUnifiedLoginModal(defaultRole = 'cliente') {
+  const modal = document.getElementById('unified-login-modal');
+  const clientErr = document.getElementById('client-login-error');
+  const adminErr = document.getElementById('admin-login-error');
+  if (clientErr) clientErr.hidden = true;
+  if (adminErr) adminErr.hidden = true;
+
+  setUnifiedLoginRole(defaultRole);
+  modal?.classList.add('open');
+}
+
+function closeUnifiedLoginModal() {
+  document.getElementById('unified-login-modal')?.classList.remove('open');
+}
+
+function updateAdminUI() {
+  const topbar = document.getElementById('admin-topbar');
+  const projectsAddWrap = document.getElementById('projects-header-admin-btn');
+  const unifiedLabel = document.getElementById('unified-login-label');
+  const navTabCliente = document.getElementById('nav-tab-cliente');
+
+  if (topbar) topbar.hidden = !isAdminLoggedIn;
+  if (projectsAddWrap) projectsAddWrap.hidden = !isAdminLoggedIn;
+
+  // A aba "Área do Cliente" só aparece no menu após login de Cliente ou Admin
+  const isAnyAuthenticated = Boolean(clientSession) || isAdminLoggedIn;
+  if (navTabCliente) {
+    navTabCliente.hidden = !isAnyAuthenticated;
+  }
+
+  if (unifiedLabel) {
+    if (isAdminLoggedIn) {
+      unifiedLabel.textContent = 'Painel Admin';
+    } else if (clientSession) {
+      unifiedLabel.textContent = `Cliente: ${clientSession.name.split(' ')[0]}`;
+    } else {
+      unifiedLabel.textContent = 'Entrar';
+    }
+  }
+
+  renderProjects();
+  if (typeof updateClientPortalUI === 'function') updateClientPortalUI();
+  if (window.lucide) window.lucide.createIcons();
+}
+
+function openAdminProjectForm(projectId = null) {
+  if (!isAdminLoggedIn) return;
+
+  const modal = document.getElementById('admin-project-modal');
+  const titleEl = document.getElementById('admin-form-title');
+  const form = document.getElementById('admin-project-form');
+  const imgStatus = document.getElementById('proj-image-status');
+  form.reset();
+  pendingProjectImageBase64 = null;
+
+  if (projectId) {
+    const proj = PROJECTS_DATA.find((p) => p.id === projectId);
+    if (!proj) return;
+
+    titleEl.textContent = `Editar Projeto • ${proj.code}`;
+    document.getElementById('proj-id').value = proj.id;
+    document.getElementById('proj-code').value = proj.code;
+    document.getElementById('proj-category').value = proj.category;
+    document.getElementById('proj-title').value = proj.title;
+    document.getElementById('proj-software').value = proj.software;
+    document.getElementById('proj-cadfile').value = proj.cadFile;
+    document.getElementById('proj-preset3d').value = proj.preset3d || 'bracket';
+    document.getElementById('proj-summary').value = proj.summary;
+
+    const specValues = Object.values(proj.specs || {});
+    document.getElementById('proj-spec-1').value = specValues[0] || '';
+    document.getElementById('proj-spec-2').value = specValues[1] || '';
+    document.getElementById('proj-spec-3').value = specValues[2] || '';
+    document.getElementById('proj-spec-4').value = specValues[3] || '';
+
+    document.getElementById('proj-deliverables').value = (proj.deliverables || []).join('\n');
+    document.getElementById('proj-visibility').value = proj.visibility || 'publico';
+    document.getElementById('proj-client-code').value = proj.clientCode || 'CLIENTE2026';
+    document.getElementById('proj-progress').value = proj.progress ?? 100;
+    document.getElementById('proj-stage').value =
+      proj.stage || 'Concluído & Validado (ART / Laudo Emitido)';
+    document.getElementById('proj-client-notes').value = proj.clientNotes || '';
+
+    pendingProjectImageBase64 = proj.imageUrl || null;
+    if (imgStatus) {
+      imgStatus.textContent = proj.imageUrl
+        ? 'Imagem personalizada já anexada. Envie outra se quiser substituir.'
+        : 'Usando blueprint técnico padrão.';
+    }
+  } else {
+    titleEl.textContent = 'Cadastrar Novo Projeto no Portfólio';
+    document.getElementById('proj-id').value = '';
+    if (imgStatus) {
+      imgStatus.textContent = 'Se não enviar, será exibido o blueprint técnico padrão.';
+    }
+  }
+
+  modal.classList.add('open');
+}
+
+function deleteAdminProject(projectId) {
+  if (!isAdminLoggedIn) return;
+  const proj = PROJECTS_DATA.find((p) => p.id === projectId);
+  if (!proj) return;
+
+  const confirmed = window.confirm(
+    `Tem certeza que deseja excluir o projeto "${proj.code} — ${proj.title}"?`
+  );
+  if (!confirmed) return;
+
+  PROJECTS_DATA = PROJECTS_DATA.filter((p) => p.id !== projectId);
+  saveProjectsToStorage(PROJECTS_DATA);
+  renderProjects();
+}
+
+function initAdminAccessLevel() {
+  const loginModal = document.getElementById('unified-login-modal');
+  const loginForm = document.getElementById('admin-login-form');
+  const loginError = document.getElementById('admin-login-error');
+  const projectModal = document.getElementById('admin-project-modal');
+  const projectForm = document.getElementById('admin-project-form');
+
+  // Botão único "Entrar" no cabeçalho
+  document.getElementById('btn-unified-login')?.addEventListener('click', () => {
+    if (isAdminLoggedIn) {
+      openAdminProjectForm(null);
+    } else if (clientSession) {
+      switchTab('cliente');
+    } else {
+      openUnifiedLoginModal('cliente');
+    }
+  });
+
+  // Alternar entre "Sou Cliente" e "Administrador (José)" dentro da janela de login
+  document.querySelectorAll('[data-login-role]').forEach((tabBtn) => {
+    tabBtn.addEventListener('click', () => {
+      setUnifiedLoginRole(tabBtn.dataset.loginRole);
+    });
+  });
+
+  document.getElementById('unified-login-close')?.addEventListener('click', closeUnifiedLoginModal);
+  document.querySelectorAll('.js-close-unified-login').forEach((btn) => {
+    btn.addEventListener('click', closeUnifiedLoginModal);
+  });
+  loginModal?.addEventListener('click', (e) => {
+    if (e.target === loginModal) closeUnifiedLoginModal();
+  });
+
+  // Autenticação do Administrador
+  loginForm?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const userVal = document.getElementById('admin-user').value.trim();
+    const passVal = document.getElementById('admin-pass').value.trim();
+
+    if (userVal === ADMIN_CREDENTIALS.user && passVal === ADMIN_CREDENTIALS.pass) {
+      isAdminLoggedIn = true;
+      sessionStorage.setItem(STORAGE_KEY_ADMIN_SESSION, 'true');
+      closeUnifiedLoginModal();
+      document.getElementById('admin-pass').value = '';
+      updateAdminUI();
+      switchTab('projetos');
+    } else {
+      if (loginError) loginError.hidden = false;
+    }
+  });
+
+  // Logout do Admin
+  document.getElementById('btn-admin-logout')?.addEventListener('click', () => {
+    isAdminLoggedIn = false;
+    sessionStorage.removeItem(STORAGE_KEY_ADMIN_SESSION);
+    updateAdminUI();
+    if (!clientSession) {
+      switchTab('inicio');
+    }
+  });
+
+  // Abrir modal de Novo Projeto
+  document.getElementById('btn-admin-new-project')?.addEventListener('click', () => {
+    switchTab('projetos');
+    openAdminProjectForm(null);
+  });
+  document.getElementById('btn-projects-add')?.addEventListener('click', () => {
+    openAdminProjectForm(null);
+  });
+
+  const closeProjectModal = () => projectModal?.classList.remove('open');
+  document.getElementById('admin-project-close')?.addEventListener('click', closeProjectModal);
+  document.getElementById('admin-project-cancel')?.addEventListener('click', closeProjectModal);
+
+  // Leitura opcional de imagem do projeto
+  document.getElementById('proj-image-input')?.addEventListener('change', (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      pendingProjectImageBase64 = ev.target.result;
+      const imgStatus = document.getElementById('proj-image-status');
+      if (imgStatus) imgStatus.textContent = `Imagem carregada: ${file.name}`;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // Salvar Novo Projeto ou Edição
+  projectForm?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const existingId = document.getElementById('proj-id').value;
+    const deliverablesRaw = document.getElementById('proj-deliverables').value;
+    const deliverables = deliverablesRaw
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean);
+
+    const projectPayload = {
+      id: existingId || `prj-${Date.now()}`,
+      code: document.getElementById('proj-code').value.trim(),
+      category: document.getElementById('proj-category').value,
+      title: document.getElementById('proj-title').value.trim(),
+      software: document.getElementById('proj-software').value.trim(),
+      cadFile: document.getElementById('proj-cadfile').value.trim(),
+      preset3d: document.getElementById('proj-preset3d').value,
+      visibility: document.getElementById('proj-visibility').value,
+      clientCode: (document.getElementById('proj-client-code').value.trim() || 'CLIENTE2026').toUpperCase(),
+      progress: Number(document.getElementById('proj-progress').value) || 100,
+      stage: document.getElementById('proj-stage').value,
+      clientNotes: document.getElementById('proj-client-notes').value.trim(),
+      summary: document.getElementById('proj-summary').value.trim(),
+      imageUrl: pendingProjectImageBase64 || null,
+      specs: {
+        Material: document.getElementById('proj-spec-1').value.trim(),
+        Norma: document.getElementById('proj-spec-2').value.trim(),
+        Verificacao: document.getElementById('proj-spec-3').value.trim(),
+        Ferramentas: document.getElementById('proj-spec-4').value.trim()
+      },
+      deliverables
+    };
+
+    if (existingId) {
+      PROJECTS_DATA = PROJECTS_DATA.map((p) => (p.id === existingId ? projectPayload : p));
+    } else {
+      PROJECTS_DATA = [projectPayload, ...PROJECTS_DATA];
+    }
+
+    saveProjectsToStorage(PROJECTS_DATA);
+    closeProjectModal();
+    renderProjects();
+    updateClientPortalUI();
+  });
+
+  // Exportar JSON dos projetos para backup/repositório
+  document.getElementById('btn-admin-export')?.addEventListener('click', () => {
+    const dataStr = JSON.stringify(PROJECTS_DATA, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'projetos-jose-antonio.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  // Importar JSON de projetos
+  document.getElementById('admin-import-json')?.addEventListener('change', (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const imported = JSON.parse(ev.target.result);
+        if (Array.isArray(imported) && imported.length > 0) {
+          PROJECTS_DATA = imported;
+          saveProjectsToStorage(PROJECTS_DATA);
+          renderProjects();
+          updateClientPortalUI();
+          alert('Acervo de projetos importado com sucesso!');
+        }
+      } catch (err) {
+        alert('Arquivo JSON inválido.');
+      }
+    };
+    reader.readAsText(file);
+  });
+
+  updateAdminUI();
+}
+
+/* ==========================================================================
+   7. PORTAL DO CLIENTE (NÍVEL DE ACESSO CLIENTE)
+   ========================================================================== */
+function downloadClientDossier(proj) {
+  const specsLines = Object.entries(proj.specs || {})
+    .map(([k, v]) => `  - ${k}: ${v}`)
+    .join('\n');
+  const deliverablesLines = (proj.deliverables || [])
+    .map((d, i) => `  ${i + 1}. ${d}`)
+    .join('\n');
+
+  const content = [
+    '=========================================================================',
+    'DOSSIÊ TÉCNICO DE ENGENHARIA & MEMORIAL DESCRITIVO',
+    'Responsável Técnico: Eng. José Antonio Silva de Sá',
+    'Títulos: Engenheiro Mecânico (UEMA) • Engenheiro de Segurança do Trabalho',
+    'Registro: CREA NACIONAL - MA/PA 112340922-6 | São Luís - MA',
+    'Contato: (98) 9 8486-9252 | joseantonio3108@gmail.com',
+    '=========================================================================',
+    '',
+    `CÓDIGO DO PROJETO : ${proj.code}`,
+    `TÍTULO            : ${proj.title}`,
+    `SOFTWARE / MÉTODO : ${proj.software}`,
+    `ARQUIVO CAD 3D    : ${proj.cadFile}`,
+    `STATUS DA ENTREGA : ${proj.stage || 'Concluído & Validado'} (${proj.progress ?? 100}%)`,
+    '',
+    '1. RESUMO TÉCNICO',
+    proj.summary,
+    '',
+    '2. PARECER TÉCNICO / LAUDO & MEMORIAL DE CÁLCULO',
+    proj.clientNotes ||
+      'Projeto verificado e validado de acordo com as normas técnicas aplicáveis.',
+    '',
+    '3. ESPECIFICAÇÕES TÉCNICAS',
+    specsLines,
+    '',
+    '4. ENTREGÁVEIS DE ENGENHARIA',
+    deliverablesLines,
+    '',
+    '=========================================================================',
+    `Documento emitido eletronicamente pelo Portal de Engenharia — ${new Date().toLocaleDateString('pt-BR')}`,
+    '========================================================================='
+  ].join('\n');
+
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `DOSSIE_${proj.code}_ENG_JOSE_ANTONIO.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function updateClientPortalUI() {
+  const dashboardBox = document.getElementById('client-dashboard-box');
+  const logoutWrap = document.getElementById('client-logout-wrap');
+  const navTabCliente = document.getElementById('nav-tab-cliente');
+  const unifiedLabel = document.getElementById('unified-login-label');
+  const welcomeTitle = document.getElementById('client-welcome-title');
+  const container = document.getElementById('client-projects-container');
+
+  const isUnlocked = Boolean(clientSession) || isAdminLoggedIn;
+
+  if (navTabCliente) navTabCliente.hidden = !isUnlocked;
+  if (dashboardBox) dashboardBox.hidden = !isUnlocked;
+  if (logoutWrap) logoutWrap.hidden = !clientSession;
+
+  if (unifiedLabel) {
+    if (isAdminLoggedIn) {
+      unifiedLabel.textContent = 'Painel Admin';
+    } else if (clientSession) {
+      unifiedLabel.textContent = `Cliente: ${clientSession.name.split(' ')[0]}`;
+    } else {
+      unifiedLabel.textContent = 'Entrar';
+    }
+  }
+
+  if (!isUnlocked || !container) return;
+
+  const clientName = isAdminLoggedIn
+    ? 'Visão Completa do Administrador (Eng. José Antonio)'
+    : `${clientSession.name} (Código: ${clientSession.code})`;
+
+  if (welcomeTitle) {
+    welcomeTitle.textContent = `Ambiente Técnico • ${clientName}`;
+  }
+
+  const accessibleProjects = PROJECTS_DATA.filter((p) => hasClientOrAdminAccess(p));
+
+  container.innerHTML = accessibleProjects
+    .map(
+      (proj) => `
+      <div class="client-delivery-card">
+        <div class="client-delivery-top">
+          <div>
+            <span class="mono-text text-accent">${proj.code} • ${proj.software}</span>
+            <h4>${proj.title}</h4>
+          </div>
+          <span class="client-stage-badge">${proj.stage || 'Concluído & Validado'}</span>
+        </div>
+
+        <div class="client-progress-wrap">
+          <div class="client-progress-header">
+            <span>ANDAMENTO DO PROJETO / LAUDO</span>
+            <strong>${proj.progress ?? 100}% CONCLUÍDO</strong>
+          </div>
+          <div class="client-progress-bar">
+            <div class="client-progress-fill" style="width:${proj.progress ?? 100}%"></div>
+          </div>
+        </div>
+
+        <div class="client-notes-box">
+          <strong>Parecer Técnico & Validação (Eng. José Antonio — CREA MA/PA 112340922-6):</strong>
+          <p style="margin-top:0.35rem;">
+            ${
+              proj.clientNotes ||
+              'Memorial de cálculo, análise de risco e modelagem 3D validados conforme normas aplicáveis.'
+            }
+          </p>
+        </div>
+
+        <div class="client-files-row">
+          <div class="client-file-tags">
+            <span class="file-chip">CAD: ${proj.cadFile}</span>
+            <span class="file-chip">NORMA: ${Object.values(proj.specs || {})[1] || 'ABNT / NR'}</span>
+            <span class="file-chip">ACESSO: ${proj.clientCode || 'CLIENTE2026'}</span>
+          </div>
+
+          <div style="display:flex;gap:0.55rem;flex-wrap:wrap;">
+            <button type="button" class="btn btn-secondary btn-sm js-client-dossier" data-id="${proj.id}">
+              Baixar Dossiê / Memorial (.TXT)
+            </button>
+            <button type="button" class="btn btn-primary btn-sm js-client-3d" data-id="${proj.id}">
+              Inspecionar em 3D
+            </button>
+          </div>
+        </div>
+      </div>
+    `
+    )
+    .join('');
+
+  container.querySelectorAll('.js-client-dossier').forEach((btn) => {
+    btn.onclick = () => {
+      const proj = PROJECTS_DATA.find((p) => p.id === btn.dataset.id);
+      if (proj) downloadClientDossier(proj);
+    };
+  });
+
+  container.querySelectorAll('.js-client-3d').forEach((btn) => {
+    btn.onclick = () => {
+      const proj = PROJECTS_DATA.find((p) => p.id === btn.dataset.id);
+      if (proj) {
+        switchTab('visualizador');
+        if (window.loadLabPreset) {
+          window.loadLabPreset(proj.preset3d, proj.cadFile);
+        }
+      }
+    };
+  });
+
+  if (window.lucide) window.lucide.createIcons();
+}
+
+function initClientPortal() {
+  const form = document.getElementById('client-login-form');
+  const errEl = document.getElementById('client-login-error');
+
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = document.getElementById('client-name-input').value.trim();
+    const code = document.getElementById('client-code-input').value.trim().toUpperCase();
+
+    const validCodes = new Set([
+      'CLIENTE2026',
+      'LUCENA2026',
+      ...PROJECTS_DATA.map((p) => (p.clientCode || 'CLIENTE2026').toUpperCase())
+    ]);
+
+    if (validCodes.has(code)) {
+      clientSession = { name, code };
+      sessionStorage.setItem(STORAGE_KEY_CLIENT_SESSION, JSON.stringify(clientSession));
+      if (errEl) errEl.hidden = true;
+      document.getElementById('client-code-input').value = '';
+      closeUnifiedLoginModal();
+      renderProjects();
+      updateClientPortalUI();
+      switchTab('cliente');
+    } else {
+      if (errEl) errEl.hidden = false;
+    }
+  });
+
+  document.getElementById('btn-client-logout')?.addEventListener('click', () => {
+    clientSession = null;
+    sessionStorage.removeItem(STORAGE_KEY_CLIENT_SESSION);
+    renderProjects();
+    updateClientPortalUI();
+    if (!isAdminLoggedIn) {
+      switchTab('inicio');
+    }
+  });
+
+  updateClientPortalUI();
+}
+
+/* ==========================================================================
+   8. FORMULÁRIO DE CONTATO & INICIALIZAÇÃO GERAL
    ========================================================================== */
 function initContactForm() {
   const form = document.getElementById('contact-form');
@@ -821,6 +1486,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initTabs();
   renderProjects();
   initProjectFiltersAndModal();
+  initAdminAccessLevel();
+  initClientPortal();
   initHeroViewport();
   initLabViewport();
   initContactForm();
