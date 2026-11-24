@@ -4,6 +4,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://unpkg.com; object-src 'none'; base-uri 'self'; form-action 'self';" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
   <title>José Antonio Silva de Sá | Engenheiro Mecânico & Segurança do Trabalho</title>
   <meta name="description"
     content="Portfólio de José Antonio Silva de Sá — Engenheiro Mecânico (UEMA) e Engenheiro de Segurança do Trabalho. Projetos em SolidWorks e Inventor, Cálculo Estrutural, Adequação NR-12 e Engenharia Diagnóstica em São Luís - MA." />
@@ -61,7 +64,8 @@
         <button class="btn btn-outline btn-sm" id="btn-unified-login" title="Acesso ao Portal / Administrador">
           <span id="unified-login-label">Entrar</span>
         </button>
-        <button class="theme-icon-btn" id="btn-theme-toggle" title="Alternar Modo Claro / Escuro" aria-label="Alternar Modo Claro / Escuro">
+        <button class="theme-icon-btn" id="btn-theme-toggle" title="Alternar Modo Claro / Escuro"
+          aria-label="Alternar Modo Claro / Escuro">
           <i data-lucide="sun" id="theme-toggle-icon"></i>
         </button>
       </div>
@@ -86,6 +90,9 @@
             <i data-lucide="upload"></i> Importar JSON
             <input type="file" id="admin-import-json" accept=".json" hidden />
           </label>
+          <button class="btn btn-secondary btn-sm" id="btn-admin-change-pass" title="Alterar senha de administrador">
+            <i data-lucide="key-round"></i> Alterar Senha
+          </button>
           <button class="btn btn-outline btn-sm" id="btn-admin-logout">
             <i data-lucide="log-out"></i> Sair do Admin
           </button>
@@ -112,7 +119,8 @@
             </h1>
 
             <p class="hero-description">
-              Engenheiro Mecânico (UEMA) e de Segurança do Trabalho. Modelagem 3D em <strong>SolidWorks e Inventor</strong>, cálculo estrutural, adequação NR-12 e gestão de manutenção.
+              Engenheiro Mecânico (UEMA) e de Segurança do Trabalho. Modelagem 3D em <strong>SolidWorks e
+                Inventor</strong>, cálculo estrutural, adequação NR-12 e gestão de manutenção.
             </p>
 
             <div class="hero-cta-group">
@@ -749,23 +757,21 @@
       </div>
 
       <!-- Painel 2: Login do Administrador (Eng. José) -->
-      <form id="admin-login-form" class="login-role-pane" hidden>
+      <form id="admin-login-form" class="login-role-pane" autocomplete="off" hidden>
         <p class="modal-desc">
-          Acesso exclusivo do <strong>Eng. José Antonio</strong> para cadastrar novos projetos, editar fichas técnicas,
-          definir códigos de clientes e gerenciar o portfólio.
+          Acesso restrito e criptografado (SHA-256) do <strong>Eng. José Antonio</strong> para cadastrar novos projetos,
+          editar fichas técnicas e gerenciar o portfólio.
         </p>
 
         <div class="form-group">
-          <label for="admin-user">Usuário</label>
-          <input type="text" id="admin-user" placeholder="jose.admin" value="jose.admin" required />
+          <label for="admin-user">Usuário Administrador</label>
+          <input type="text" id="admin-user" placeholder="Digite seu usuário" autocomplete="username" required />
         </div>
 
         <div class="form-group">
-          <label for="admin-pass">Senha de Administrador</label>
-          <input type="password" id="admin-pass" placeholder="Digite a senha de administrador" required />
-          <small class="mono-text" style="display:block;margin-top:0.35rem;color:var(--text-muted);">
-            Senha padrão: <code>crea112340</code>
-          </small>
+          <label for="admin-pass">Senha de Acesso</label>
+          <input type="password" id="admin-pass" placeholder="Digite sua senha" autocomplete="current-password"
+            required />
         </div>
 
         <p class="admin-error-msg mono-text" id="admin-login-error" hidden>
@@ -774,7 +780,7 @@
 
         <div class="modal-footer" style="margin-top:1.25rem;">
           <button type="button" class="btn btn-secondary js-close-unified-login">Cancelar</button>
-          <button type="submit" class="btn btn-primary">
+          <button type="submit" class="btn btn-primary" id="btn-admin-submit">
             <i data-lucide="shield-check"></i> Entrar como Admin
           </button>
         </div>

@@ -3,6 +3,71 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { STLLoader } from 'three/addons/loaders/STLLoader.js';
 
 /* ==========================================================================
+   0. CAMADA DE SEGURANÇA (SANITIZAÇÃO XSS, VALIDAÇÃO & CRIPTOGRAFIA SHA-256)
+   ========================================================================== */
+function escapeHTML(value) {
+  if (value === null || value === undefined) return '';
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function isSafeImageDataUrl(url) {
+  if (!url || typeof url !== 'string') return false;
+  return /^data:image\/(png|jpeg|jpg|webp|gif);base64,[A-Za-z0-9+/=]+$/i.test(url.trim());
+}
+
+async function computeSaltedHash(user, pass) {
+  const payload = `${user.trim().toLowerCase()}:${pass}:crea_ma_pa_112340922_6`;
+  const encoder = new TextEncoder();
+  const data = encoder.encode(payload);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+function sanitizeProjectRecord(raw) {
+  if (!raw || typeof raw !== 'object') return null;
+  const allowedCategories = ['estruturas', 'maquinas', 'simulacao'];
+  const allowedPresets = ['bracket', 'gear', 'flange', 'piston'];
+
+  const safeSpecs = {};
+  if (raw.specs && typeof raw.specs === 'object') {
+    Object.entries(raw.specs)
+      .slice(0, 6)
+      .forEach(([k, v]) => {
+        safeSpecs[String(k).slice(0, 40)] = String(v ?? '').slice(0, 140);
+      });
+  }
+
+  const safeDeliverables = Array.isArray(raw.deliverables)
+    ? raw.deliverables.slice(0, 15).map((d) => String(d).slice(0, 220))
+    : [];
+
+  return {
+    id: String(raw.id || `prj-${Date.now()}`).replace(/[^a-zA-Z0-9_-]/g, ''),
+    code: String(raw.code || 'PRJ-000').slice(0, 40),
+    title: String(raw.title || 'Projeto de Engenharia').slice(0, 140),
+    category: allowedCategories.includes(raw.category) ? raw.category : 'estruturas',
+    software: String(raw.software || 'SolidWorks 3D').slice(0, 80),
+    preset3d: allowedPresets.includes(raw.preset3d) ? raw.preset3d : 'bracket',
+    cadFile: String(raw.cadFile || 'MODELO.SLDPRT').slice(0, 80),
+    visibility: raw.visibility === 'restrito' ? 'restrito' : 'publico',
+    clientCode: String(raw.clientCode || 'CLIENTE2026').slice(0, 30).toUpperCase(),
+    progress: Math.min(100, Math.max(0, Number(raw.progress) || 100)),
+    stage: String(raw.stage || 'Concluído & Validado').slice(0, 90),
+    clientNotes: String(raw.clientNotes || '').slice(0, 600),
+    summary: String(raw.summary || '').slice(0, 500),
+    imageUrl: isSafeImageDataUrl(raw.imageUrl) ? raw.imageUrl : null,
+    specs: safeSpecs,
+    deliverables: safeDeliverables
+  };
+}
+
+/* ==========================================================================
    1. BANCO DE DADOS DE PROJETOS & PERSISTÊNCIA (NÍVEL DE ACESSO ADMIN)
    ========================================================================== */
 const STORAGE_KEY_PROJECTS = 'jose_portfolio_projects_v2';
@@ -203,17 +268,23 @@ function initTabs() {
    ========================================================================== */
 function createProjectCardHTML(project) {
   const specValues = Object.values(project.specs || {});
-  const primaryTag = specValues[1] || project.software;
+  const primaryTag = escapeHTML(specValues[1] || project.software);
+  const safeId = escapeHTML(project.id);
+  const safeCode = escapeHTML(project.code);
+  const safeSoftware = escapeHTML(project.software);
+  const safeTitle = escapeHTML(project.title);
+  const safeSummary = escapeHTML(project.summary);
+  const safeCategory = escapeHTML(project.category);
 
   const adminToolbarHTML = isAdminLoggedIn
     ? `
       <div class="admin-card-toolbar">
         <span class="mono-text">ADMIN</span>
         <div class="admin-card-btns">
-          <button type="button" class="btn-admin-card js-admin-edit" data-id="${project.id}">
+          <button type="button" class="btn-admin-card js-admin-edit" data-id="${safeId}">
             Editar
           </button>
-          <button type="button" class="btn-admin-card danger js-admin-delete" data-id="${project.id}">
+          <button type="button" class="btn-admin-card danger js-admin-delete" data-id="${safeId}">
             Excluir
           </button>
         </div>
@@ -221,8 +292,8 @@ function createProjectCardHTML(project) {
     `
     : '';
 
-  const centerVisualHTML = project.imageUrl
-    ? `<img src="${project.imageUrl}" alt="${project.title}" class="project-custom-thumb" />`
+  const centerVisualHTML = isSafeImageDataUrl(project.imageUrl)
+    ? `<img src="${project.imageUrl}" alt="${safeTitle}" class="project-custom-thumb" />`
     : `
         <div class="thumb-svg-art">
           <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25">
@@ -234,35 +305,35 @@ function createProjectCardHTML(project) {
       `;
 
   return `
-    <article class="project-card" data-category="${project.category}">
+    <article class="project-card" data-category="${safeCategory}">
       ${adminToolbarHTML}
       <div class="project-blueprint-thumb">
         <div class="thumb-top-row">
-          <span class="project-code-badge">${project.code}</span>
-          <span class="project-software-badge">${project.software}</span>
+          <span class="project-code-badge">${safeCode}</span>
+          <span class="project-software-badge">${safeSoftware}</span>
         </div>
 
         ${centerVisualHTML}
       </div>
 
       <div class="project-body">
-        <h3 class="project-title">${project.title}</h3>
-        <p class="project-summary">${project.summary}</p>
+        <h3 class="project-title">${safeTitle}</h3>
+        <p class="project-summary">${safeSummary}</p>
 
         <div class="project-clean-meta mono-text">
           <span>${primaryTag}</span>
         </div>
 
         <div class="project-actions">
-          <button class="btn btn-secondary js-open-details" data-id="${project.id}">
+          <button class="btn btn-secondary js-open-details" data-id="${safeId}">
             Detalhes
           </button>
-          <button class="btn btn-outline js-inspect-3d" data-id="${project.id}">
+          <button class="btn btn-outline js-inspect-3d" data-id="${safeId}">
             Ver 3D
           </button>
           <a href="https://wa.me/5598984869252?text=${encodeURIComponent(
             `Olá Eng. José Antonio! Vi o projeto "${project.code} - ${project.title}" no seu portfólio e gostaria de conversar.`
-          )}" target="_blank" rel="noopener" class="btn btn-primary" title="Falar no WhatsApp sobre este projeto">
+          )}" target="_blank" rel="noopener noreferrer" class="btn btn-primary" title="Falar no WhatsApp sobre este projeto">
             Fale Comigo
           </a>
         </div>
@@ -348,19 +419,19 @@ function openProjectModal(projectId) {
   document.getElementById('modal-project-title').textContent = proj.title;
   document.getElementById('modal-project-desc').textContent = proj.summary;
 
-  document.getElementById('modal-project-specs').innerHTML = Object.entries(proj.specs)
+  document.getElementById('modal-project-specs').innerHTML = Object.entries(proj.specs || {})
     .map(
       ([k, v]) => `
       <div class="spec-cell" style="background:rgba(8,44,67,0.6);padding:0.65rem;border-radius:6px;border:1px solid rgba(205,210,213,0.15)">
-        <span>${k.toUpperCase()}</span>
-        <strong>${v}</strong>
+        <span>${escapeHTML(k).toUpperCase()}</span>
+        <strong>${escapeHTML(v)}</strong>
       </div>
     `
     )
     .join('');
 
-  document.getElementById('modal-project-deliverables').innerHTML = proj.deliverables
-    .map((item) => `<li>${item}</li>`)
+  document.getElementById('modal-project-deliverables').innerHTML = (proj.deliverables || [])
+    .map((item) => `<li>${escapeHTML(item)}</li>`)
     .join('');
 
   const vaultEl = document.getElementById('modal-client-vault');
@@ -378,18 +449,19 @@ function openProjectModal(projectId) {
     vaultEl.innerHTML = `
       <div style="display:flex;justify-content:space-between;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.5rem;">
         <span class="mono-text text-accent">✔ PARECER TÉCNICO & VALIDAÇÃO DE ENGENHARIA</span>
-        <span class="client-stage-badge">${proj.stage || 'Concluído & Validado'}</span>
+        <span class="client-stage-badge">${escapeHTML(proj.stage || 'Concluído & Validado')}</span>
       </div>
       <p style="font-size:0.86rem;margin-bottom:0.85rem;">
-        <strong>Resumo Técnico:</strong> ${proj.clientNotes ||
-      'Memorial de cálculo e modelagem 3D validados conforme normas técnicas aplicáveis.'
-      }
+        <strong>Resumo Técnico:</strong> ${escapeHTML(
+          proj.clientNotes ||
+            'Memorial de cálculo e modelagem 3D validados conforme normas técnicas aplicáveis.'
+        )}
       </p>
       <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
         <button type="button" class="btn btn-secondary btn-sm" id="modal-download-dossier-btn">
-          Baixar Ficha / Memorial (${proj.code}.txt)
+          Baixar Ficha / Memorial (${escapeHTML(proj.code)}.txt)
         </button>
-        <a href="${waLink}" target="_blank" rel="noopener" class="btn btn-primary btn-sm">
+        <a href="${waLink}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm">
           Fale Comigo no WhatsApp sobre este Projeto
         </a>
       </div>
@@ -844,10 +916,18 @@ function initLabViewport() {
     e.currentTarget.classList.toggle('active', controls.autoRotate);
   });
 
-  // Upload de arquivo .STL real exportado do SolidWorks
+  // Upload de arquivo .STL real exportado do SolidWorks (com validação de extensão e limite 25MB)
   const stlInput = document.getElementById('stl-file-input');
   const handleStlFile = (file) => {
     if (!file) return;
+    if (!file.name.toLowerCase().endsWith('.stl')) {
+      document.getElementById('lab-status').textContent = 'FORMATO INVÁLIDO (USE .STL)';
+      return;
+    }
+    if (file.size > 25 * 1024 * 1024) {
+      document.getElementById('lab-status').textContent = 'ARQUIVO EXCEDE 25 MB';
+      return;
+    }
     const reader = new FileReader();
     document.getElementById('lab-status').textContent = 'PROCESSANDO MALHA STL...';
 
@@ -937,14 +1017,35 @@ function initLabViewport() {
 }
 
 /* ==========================================================================
-   6. SISTEMA DE NÍVEL DE ACESSO (PAINEL ADMINISTRADOR)
+   6. SISTEMA DE NÍVEL DE ACESSO (PAINEL ADMINISTRADOR COM SHA-256 & RATE LIMIT)
    ========================================================================== */
-const ADMIN_CREDENTIALS = {
-  user: 'jose.admin',
-  pass: 'crea112340'
-};
+const DEFAULT_ADMIN_HASH = 'af5ddd831f77254d19c63e74ce54fffe411ae0764d59926e6f0f107550d62ead';
+const STORAGE_KEY_CUSTOM_ADMIN_HASH = 'jose_portfolio_admin_hash_v1';
+const STORAGE_KEY_LOGIN_LOCKOUT = 'jose_portfolio_admin_lockout';
+const STORAGE_KEY_ADMIN_LAST_ACTIVE = 'jose_portfolio_admin_last_active';
+const ADMIN_SESSION_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutos de inatividade
+const MAX_LOGIN_ATTEMPTS = 3;
+const LOCKOUT_DURATION_MS = 60 * 1000; // 1 minuto de bloqueio após 3 erros
 
+let failedLoginAttempts = 0;
 let pendingProjectImageBase64 = null;
+
+function getExpectedAdminHash() {
+  return localStorage.getItem(STORAGE_KEY_CUSTOM_ADMIN_HASH) || DEFAULT_ADMIN_HASH;
+}
+
+function checkAdminSessionTimeout() {
+  if (!isAdminLoggedIn) return;
+  const lastActive = Number(sessionStorage.getItem(STORAGE_KEY_ADMIN_LAST_ACTIVE) || 0);
+  if (lastActive && Date.now() - lastActive > ADMIN_SESSION_TIMEOUT_MS) {
+    isAdminLoggedIn = false;
+    sessionStorage.removeItem(STORAGE_KEY_ADMIN_SESSION);
+    sessionStorage.removeItem(STORAGE_KEY_ADMIN_LAST_ACTIVE);
+    updateAdminUI();
+  } else {
+    sessionStorage.setItem(STORAGE_KEY_ADMIN_LAST_ACTIVE, String(Date.now()));
+  }
+}
 
 function setUnifiedLoginRole(role = 'cliente') {
   const clientTab = document.getElementById('tab-role-cliente');
@@ -1075,6 +1176,7 @@ function deleteAdminProject(projectId) {
 }
 
 function initAdminAccessLevel() {
+  checkAdminSessionTimeout();
   const loginModal = document.getElementById('unified-login-modal');
   const loginForm = document.getElementById('admin-login-form');
   const loginError = document.getElementById('admin-login-error');
@@ -1107,28 +1209,80 @@ function initAdminAccessLevel() {
     if (e.target === loginModal) closeUnifiedLoginModal();
   });
 
-  // Autenticação do Administrador
-  loginForm?.addEventListener('submit', (e) => {
+  // Autenticação Criptografada (SHA-256) + Proteção contra Força Bruta
+  loginForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
+    const lockoutUntil = Number(sessionStorage.getItem(STORAGE_KEY_LOGIN_LOCKOUT) || 0);
+    const now = Date.now();
+
+    if (lockoutUntil > now) {
+      const remainingSec = Math.ceil((lockoutUntil - now) / 1000);
+      if (loginError) {
+        loginError.textContent = `Muitas tentativas. Aguarde ${remainingSec}s para tentar novamente.`;
+        loginError.hidden = false;
+      }
+      return;
+    }
+
     const userVal = document.getElementById('admin-user').value.trim();
     const passVal = document.getElementById('admin-pass').value.trim();
+    const candidateHash = await computeSaltedHash(userVal, passVal);
 
-    if (userVal === ADMIN_CREDENTIALS.user && passVal === ADMIN_CREDENTIALS.pass) {
+    if (candidateHash === getExpectedAdminHash()) {
+      failedLoginAttempts = 0;
+      sessionStorage.removeItem(STORAGE_KEY_LOGIN_LOCKOUT);
       isAdminLoggedIn = true;
       sessionStorage.setItem(STORAGE_KEY_ADMIN_SESSION, 'true');
+      sessionStorage.setItem(STORAGE_KEY_ADMIN_LAST_ACTIVE, String(Date.now()));
       closeUnifiedLoginModal();
       document.getElementById('admin-pass').value = '';
       updateAdminUI();
       switchTab('projetos');
     } else {
-      if (loginError) loginError.hidden = false;
+      failedLoginAttempts += 1;
+      if (failedLoginAttempts >= MAX_LOGIN_ATTEMPTS) {
+        sessionStorage.setItem(STORAGE_KEY_LOGIN_LOCKOUT, String(Date.now() + LOCKOUT_DURATION_MS));
+        failedLoginAttempts = 0;
+        if (loginError) {
+          loginError.textContent =
+            'Acesso bloqueado temporariamente por 60 segundos após 3 tentativas inválidas.';
+          loginError.hidden = false;
+        }
+      } else if (loginError) {
+        loginError.textContent = `Credenciais inválidas (${MAX_LOGIN_ATTEMPTS - failedLoginAttempts} tentativa(s) restante(s)).`;
+        loginError.hidden = false;
+      }
     }
+  });
+
+  // Alterar Senha do Admin (Salva apenas o Hash SHA-256)
+  document.getElementById('btn-admin-change-pass')?.addEventListener('click', async () => {
+    if (!isAdminLoggedIn) return;
+    const newPass = window.prompt(
+      'Digite a nova senha de Administrador (mínimo 8 caracteres):'
+    );
+    if (!newPass) return;
+    if (newPass.trim().length < 8) {
+      alert('A nova senha deve ter pelo menos 8 caracteres.');
+      return;
+    }
+    const newHash = await computeSaltedHash('jose.admin', newPass.trim());
+    localStorage.setItem(STORAGE_KEY_CUSTOM_ADMIN_HASH, newHash);
+    alert('Senha de Administrador atualizada e criptografada com sucesso!');
+  });
+
+  // Monitoramento de expiração de sessão por inatividade
+  ['click', 'keydown'].forEach((evt) => {
+    window.addEventListener(evt, () => {
+      if (isAdminLoggedIn) checkAdminSessionTimeout();
+    });
   });
 
   // Logout do Admin
   document.getElementById('btn-admin-logout')?.addEventListener('click', () => {
     isAdminLoggedIn = false;
     sessionStorage.removeItem(STORAGE_KEY_ADMIN_SESSION);
+    sessionStorage.removeItem(STORAGE_KEY_ADMIN_LAST_ACTIVE);
     updateAdminUI();
     if (!clientSession) {
       switchTab('inicio');
@@ -1148,15 +1302,29 @@ function initAdminAccessLevel() {
   document.getElementById('admin-project-close')?.addEventListener('click', closeProjectModal);
   document.getElementById('admin-project-cancel')?.addEventListener('click', closeProjectModal);
 
-  // Leitura opcional de imagem do projeto
+  // Leitura opcional de imagem do projeto com validação de tipo e tamanho (máx 4MB)
   document.getElementById('proj-image-input')?.addEventListener('change', (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    const allowedMime = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
+    if (!allowedMime.includes(file.type)) {
+      alert('Formato inválido. Envie apenas imagens PNG, JPG ou WEBP.');
+      e.target.value = '';
+      return;
+    }
+    if (file.size > 4 * 1024 * 1024) {
+      alert('A imagem deve ter no máximo 4 MB.');
+      e.target.value = '';
+      return;
+    }
     const reader = new FileReader();
     reader.onload = (ev) => {
-      pendingProjectImageBase64 = ev.target.result;
-      const imgStatus = document.getElementById('proj-image-status');
-      if (imgStatus) imgStatus.textContent = `Imagem carregada: ${file.name}`;
+      const result = ev.target.result;
+      if (isSafeImageDataUrl(result)) {
+        pendingProjectImageBase64 = result;
+        const imgStatus = document.getElementById('proj-image-status');
+        if (imgStatus) imgStatus.textContent = `Imagem validada: ${file.name}`;
+      }
     };
     reader.readAsDataURL(file);
   });
@@ -1219,20 +1387,29 @@ function initAdminAccessLevel() {
     URL.revokeObjectURL(url);
   });
 
-  // Importar JSON de projetos
+  // Importar JSON de projetos com sanitização e validação de esquema
   document.getElementById('admin-import-json')?.addEventListener('change', (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Arquivo JSON excede o tamanho máximo permitido (5 MB).');
+      return;
+    }
     const reader = new FileReader();
     reader.onload = (ev) => {
       try {
         const imported = JSON.parse(ev.target.result);
-        if (Array.isArray(imported) && imported.length > 0) {
-          PROJECTS_DATA = imported;
-          saveProjectsToStorage(PROJECTS_DATA);
-          renderProjects();
-          updateClientPortalUI();
-          alert('Acervo de projetos importado com sucesso!');
+        if (Array.isArray(imported) && imported.length > 0 && imported.length <= 100) {
+          const sanitizedList = imported.map(sanitizeProjectRecord).filter(Boolean);
+          if (sanitizedList.length > 0) {
+            PROJECTS_DATA = sanitizedList;
+            saveProjectsToStorage(PROJECTS_DATA);
+            renderProjects();
+            updateClientPortalUI();
+            alert('Acervo de projetos validado e importado com sucesso!');
+          }
+        } else {
+          alert('Formato de lista JSON inválido.');
         }
       } catch (err) {
         alert('Arquivo JSON inválido.');
