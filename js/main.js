@@ -202,12 +202,13 @@ function initTabs() {
    3. RENDERIZAÇÃO DOS CARDS DE PROJETOS & MODAL
    ========================================================================== */
 function createProjectCardHTML(project) {
-  const specEntries = Object.entries(project.specs).slice(0, 4);
+  const specValues = Object.values(project.specs || {});
+  const primaryTag = specValues[1] || project.software;
 
   const adminToolbarHTML = isAdminLoggedIn
     ? `
       <div class="admin-card-toolbar">
-        <span class="mono-text">CONTROLE ADMIN</span>
+        <span class="mono-text">ADMIN</span>
         <div class="admin-card-btns">
           <button type="button" class="btn-admin-card js-admin-edit" data-id="${project.id}">
             Editar
@@ -224,7 +225,7 @@ function createProjectCardHTML(project) {
     ? `<img src="${project.imageUrl}" alt="${project.title}" class="project-custom-thumb" />`
     : `
         <div class="thumb-svg-art">
-          <svg width="78" height="78" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25">
             <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
             <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
             <line x1="12" y1="22.08" x2="12" y2="12"></line>
@@ -242,37 +243,28 @@ function createProjectCardHTML(project) {
         </div>
 
         ${centerVisualHTML}
-
-        <div class="thumb-bottom-row">
-          <span>ARQUIVO: ${project.cadFile}</span>
-          <span>ESCALA 1:1</span>
-        </div>
       </div>
 
       <div class="project-body">
         <h3 class="project-title">${project.title}</h3>
         <p class="project-summary">${project.summary}</p>
 
-        <div class="project-specs-mini">
-          ${specEntries
-      .map(
-        ([label, val]) => `
-            <div class="spec-cell">
-              <span>${label.toUpperCase()}</span>
-              <strong>${val}</strong>
-            </div>
-          `
-      )
-      .join('')}
+        <div class="project-clean-meta mono-text">
+          <span>${primaryTag}</span>
         </div>
 
         <div class="project-actions">
           <button class="btn btn-secondary js-open-details" data-id="${project.id}">
-            Ficha Técnica
+            Detalhes
           </button>
-          <button class="btn btn-primary js-inspect-3d" data-id="${project.id}">
-            Ver em 3D
+          <button class="btn btn-outline js-inspect-3d" data-id="${project.id}">
+            Ver 3D
           </button>
+          <a href="https://wa.me/5598984869252?text=${encodeURIComponent(
+            `Olá Eng. José Antonio! Vi o projeto "${project.code} - ${project.title}" no seu portfólio e gostaria de conversar.`
+          )}" target="_blank" rel="noopener" class="btn btn-primary" title="Falar no WhatsApp sobre este projeto">
+            Fale Comigo
+          </a>
         </div>
       </div>
     </article>
@@ -373,44 +365,38 @@ function openProjectModal(projectId) {
 
   const vaultEl = document.getElementById('modal-client-vault');
   if (vaultEl) {
-    if (hasClientOrAdminAccess(proj)) {
-      vaultEl.innerHTML = `
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.5rem;">
-          <span class="mono-text text-accent">✔ DOCUMENTAÇÃO DO CLIENTE LIBERADA (${proj.progress ?? 100}% CONCLUÍDO)</span>
-          <span class="client-stage-badge">${proj.stage || 'Concluído & Validado'}</span>
-        </div>
-        <p style="font-size:0.86rem;margin-bottom:0.75rem;">
-          <strong>Parecer Técnico / Laudo:</strong> ${
-            proj.clientNotes ||
-            'Memorial de cálculo e modelagem 3D validados conforme normas técnicas aplicáveis.'
-          }
-        </p>
-        <button type="button" class="btn btn-secondary btn-sm" id="modal-download-dossier-btn">
-          Baixar Dossiê Técnico / Memorial (${proj.code}.txt)
-        </button>
-      `;
-      document.getElementById('modal-download-dossier-btn')?.addEventListener('click', () => {
-        downloadClientDossier(proj);
-      });
-    } else {
-      vaultEl.innerHTML = `
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:0.75rem;flex-wrap:wrap;">
-          <div>
-            <span class="mono-text text-accent">🔒 LAUDO COMPLETO & ARQUIVOS NATIVOS DO CLIENTE</span>
-            <p style="font-size:0.83rem;margin-top:0.2rem;">
-              O memorial de cálculo detalhado, matriz HRN e pacote CAD estão disponíveis na Área do Cliente.
-            </p>
-          </div>
-          <button type="button" class="btn btn-outline btn-sm" id="modal-go-client-portal">
-            Desbloquear na Área do Cliente
-          </button>
-        </div>
-      `;
-      document.getElementById('modal-go-client-portal')?.addEventListener('click', () => {
-        modal.classList.remove('open');
-        openUnifiedLoginModal('cliente');
-      });
+    const waMsg = encodeURIComponent(
+      `Olá Eng. José Antonio, vi o projeto "${proj.code} - ${proj.title}" no seu portfólio e gostaria de conversar!`
+    );
+    const waLink = `https://wa.me/5598984869252?text=${waMsg}`;
+
+    const modalContactBtn = document.getElementById('modal-contact-btn');
+    if (modalContactBtn) {
+      modalContactBtn.href = waLink;
     }
+
+    vaultEl.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.5rem;">
+        <span class="mono-text text-accent">✔ PARECER TÉCNICO & VALIDAÇÃO DE ENGENHARIA</span>
+        <span class="client-stage-badge">${proj.stage || 'Concluído & Validado'}</span>
+      </div>
+      <p style="font-size:0.86rem;margin-bottom:0.85rem;">
+        <strong>Resumo Técnico:</strong> ${proj.clientNotes ||
+      'Memorial de cálculo e modelagem 3D validados conforme normas técnicas aplicáveis.'
+      }
+      </p>
+      <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
+        <button type="button" class="btn btn-secondary btn-sm" id="modal-download-dossier-btn">
+          Baixar Ficha / Memorial (${proj.code}.txt)
+        </button>
+        <a href="${waLink}" target="_blank" rel="noopener" class="btn btn-primary btn-sm">
+          Fale Comigo no WhatsApp sobre este Projeto
+        </a>
+      </div>
+    `;
+    document.getElementById('modal-download-dossier-btn')?.addEventListener('click', () => {
+      downloadClientDossier(proj);
+    });
   }
 
   const open3dBtn = document.getElementById('modal-open-3d-btn');
@@ -1289,7 +1275,7 @@ function downloadClientDossier(proj) {
     '',
     '2. PARECER TÉCNICO / LAUDO & MEMORIAL DE CÁLCULO',
     proj.clientNotes ||
-      'Projeto verificado e validado de acordo com as normas técnicas aplicáveis.',
+    'Projeto verificado e validado de acordo com as normas técnicas aplicáveis.',
     '',
     '3. ESPECIFICAÇÕES TÉCNICAS',
     specsLines,
@@ -1372,10 +1358,9 @@ function updateClientPortalUI() {
         <div class="client-notes-box">
           <strong>Parecer Técnico & Validação (Eng. José Antonio — CREA MA/PA 112340922-6):</strong>
           <p style="margin-top:0.35rem;">
-            ${
-              proj.clientNotes ||
-              'Memorial de cálculo, análise de risco e modelagem 3D validados conforme normas aplicáveis.'
-            }
+            ${proj.clientNotes ||
+        'Memorial de cálculo, análise de risco e modelagem 3D validados conforme normas aplicáveis.'
+        }
           </p>
         </div>
 
@@ -1461,6 +1446,16 @@ function initClientPortal() {
     }
   });
 
+  document.getElementById('btn-visitor-go-projects')?.addEventListener('click', () => {
+    closeUnifiedLoginModal();
+    switchTab('projetos');
+  });
+
+  document.getElementById('btn-visitor-go-contact')?.addEventListener('click', () => {
+    closeUnifiedLoginModal();
+    switchTab('contato');
+  });
+
   updateClientPortalUI();
 }
 
@@ -1482,7 +1477,39 @@ function initContactForm() {
   });
 }
 
+function initThemeToggle() {
+  const THEME_KEY = 'jose_portfolio_theme';
+  const savedTheme = localStorage.getItem(THEME_KEY) || 'dark';
+
+  const applyTheme = (theme) => {
+    if (theme === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+    }
+    localStorage.setItem(THEME_KEY, theme);
+
+    const btn = document.getElementById('btn-theme-toggle');
+    if (btn) {
+      const iconName = theme === 'light' ? 'moon' : 'sun';
+      btn.innerHTML = `<i data-lucide="${iconName}" id="theme-toggle-icon"></i>`;
+      btn.title = theme === 'light' ? 'Mudar para Modo Escuro' : 'Mudar para Modo Claro';
+    }
+    if (window.lucide) {
+      window.lucide.createIcons();
+    }
+  };
+
+  applyTheme(savedTheme);
+
+  document.getElementById('btn-theme-toggle')?.addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+    applyTheme(current === 'light' ? 'dark' : 'light');
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  initThemeToggle();
   initTabs();
   renderProjects();
   initProjectFiltersAndModal();

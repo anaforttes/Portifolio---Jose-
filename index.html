@@ -43,43 +43,26 @@
           <i data-lucide="cog"></i>
         </span>
         <div class="brand-text">
-          <span class="brand-name">JOSÉ ANTONIO SILVA DE SÁ</span>
-          <span class="brand-role">ENG. MECÂNICO • CREA MA/PA 112340922-6</span>
+          <span class="brand-name">José Antonio</span>
+          <span class="brand-role">Engenharia Mecânica & Projetos</span>
         </div>
       </a>
 
       <nav class="main-nav" aria-label="Navegação Principal">
-        <button class="nav-tab active" data-tab-target="inicio">
-          <i data-lucide="compass"></i>
-          <span>Visão Geral</span>
-        </button>
-        <button class="nav-tab" data-tab-target="projetos">
-          <i data-lucide="layers"></i>
-          <span>Projetos & SolidWorks</span>
-          <span class="tab-count" id="project-count-badge">4</span>
-        </button>
-        <button class="nav-tab" data-tab-target="visualizador">
-          <i data-lucide="box"></i>
-          <span>Laboratório 3D (STL)</span>
-        </button>
-        <button class="nav-tab" data-tab-target="cliente" id="nav-tab-cliente" hidden>
-          <i data-lucide="key-round"></i>
-          <span>Área do Cliente</span>
-        </button>
-        <button class="nav-tab" data-tab-target="sobre">
-          <i data-lucide="briefcase"></i>
-          <span>Currículo & Formação</span>
-        </button>
-        <button class="nav-tab" data-tab-target="contato">
-          <i data-lucide="mail"></i>
-          <span>Contato</span>
-        </button>
+        <button class="nav-tab active" data-tab-target="inicio">Início</button>
+        <button class="nav-tab" data-tab-target="projetos">Projetos</button>
+        <button class="nav-tab" data-tab-target="visualizador">Visualizador 3D</button>
+        <button class="nav-tab" data-tab-target="cliente" id="nav-tab-cliente" hidden>Área do Cliente</button>
+        <button class="nav-tab" data-tab-target="sobre">Currículo</button>
+        <button class="nav-tab" data-tab-target="contato">Contato</button>
       </nav>
 
       <div class="header-actions">
-        <button class="btn btn-primary btn-sm" id="btn-unified-login" title="Entrar como Cliente ou Administrador">
-          <i data-lucide="key-round"></i>
+        <button class="btn btn-outline btn-sm" id="btn-unified-login" title="Acesso ao Portal / Administrador">
           <span id="unified-login-label">Entrar</span>
+        </button>
+        <button class="theme-icon-btn" id="btn-theme-toggle" title="Alternar Modo Claro / Escuro" aria-label="Alternar Modo Claro / Escuro">
+          <i data-lucide="sun" id="theme-toggle-icon"></i>
         </button>
       </div>
     </div>
@@ -121,85 +104,56 @@
           <div class="hero-copy">
             <div class="tech-tag">
               <span class="status-dot"></span>
-              <span>ENGENHEIRO MECÂNICO (UEMA) • ENG. DE SEGURANÇA DO TRABALHO</span>
+              <span>CREA MA/PA 112340922-6 • São Luís, MA</span>
             </div>
 
             <h1 class="hero-title">
-              Projetos Mecânicos, <span class="text-accent">Validação Estrutural</span> e Engenharia Diagnóstica.
+              Projetos Mecânicos & <span class="text-accent">Validação Estrutural</span>.
             </h1>
 
             <p class="hero-description">
-              Olá, sou <strong>José Antonio Silva de Sá</strong> (<span class="mono-text">CREA NACIONAL - MA/PA
-                112340922-6</span>), sediado em <strong>São Luís – MA</strong>. Atuo na modelagem 3D em
-              <strong>SolidWorks e Inventor</strong>, elaboração de memórias de cálculo estrutural (andaimes,
-              dispositivos de içamento e suportes industriais), laudos técnicos de NR-12 (método HRN) e planos de
-              manutenção (PCM) para máquinas industriais e pesadas.
+              Engenheiro Mecânico (UEMA) e de Segurança do Trabalho. Modelagem 3D em <strong>SolidWorks e Inventor</strong>, cálculo estrutural, adequação NR-12 e gestão de manutenção.
             </p>
 
             <div class="hero-cta-group">
               <button class="btn btn-primary" data-tab-target="projetos">
-                <i data-lucide="layers"></i>
-                Explorar Projetos & Memórias
+                Ver Projetos
               </button>
-              <button class="btn btn-secondary" data-tab-target="visualizador">
-                <i data-lucide="rotate-3d"></i>
-                Visualizador SolidWorks 3D
-              </button>
-              <button class="btn btn-outline" data-tab-target="sobre">
-                <i data-lucide="file-text"></i>
-                Ver Trajetória & CREA
-              </button>
+              <a href="https://wa.me/5598984869252?text=Ol%C3%A1%20Eng.%20Jos%C3%A9%20Antonio!%20Vi%20seu%20portf%C3%B3lio%20e%20gostaria%20de%20conversar."
+                target="_blank" rel="noopener" class="btn btn-outline">
+                <i data-lucide="message-circle"></i>
+                Fale Comigo
+              </a>
             </div>
 
-            <div class="hero-metrics">
-              <div class="metric-item">
-                <span class="metric-code">CAD 3D</span>
-                <strong class="metric-value">SolidWorks & Inventor</strong>
-                <span class="metric-label">Projetos, Dispositivos & Estruturas</span>
-              </div>
-              <div class="metric-item">
-                <span class="metric-code">ESTRUTURAS</span>
-                <strong class="metric-value">Cálculo & Laudos</strong>
-                <span class="metric-label">Içamento, Andaimes & Suportes</span>
-              </div>
-              <div class="metric-item">
-                <span class="metric-code">NR-12 / NR-35</span>
-                <strong class="metric-value">Método HRN & PCM</strong>
-                <span class="metric-label">Engenharia Diagnóstica & Ativos</span>
-              </div>
+            <div class="hero-clean-tags">
+              <span>SolidWorks & Inventor</span>
+              <span>•</span>
+              <span>Cálculo Estrutural</span>
+              <span>•</span>
+              <span>Laudos NR-12 (HRN)</span>
             </div>
           </div>
 
-          <!-- Preview 3D Interativo na Home -->
+          <!-- Preview 3D Clean na Home -->
           <div class="hero-cad-card">
             <div class="cad-card-header">
               <div class="cad-file-info">
-                <i data-lucide="file-box" class="icon-accent"></i>
-                <span class="mono-text" id="hero-model-filename">SUPORTE_ESTRUTURAL_FEA.SLDPRT</span>
+                <span class="mono-text" id="hero-model-filename">EST-01_SUPORTE_ICAMENTO.SLDPRT</span>
               </div>
-              <div class="cad-badges">
-                <span class="cad-pill">INTERATIVO 3D</span>
-                <span class="cad-pill accent">SOLIDWORKS / INVENTOR</span>
-              </div>
+              <span class="cad-pill accent">3D Interativo</span>
             </div>
 
             <div class="cad-viewport-wrapper">
               <div id="hero-3d-canvas" class="cad-viewport" aria-label="Visualização 3D interativa de peça mecânica">
               </div>
 
-              <!-- HUD Técnico estilo SolidWorks -->
-              <div class="cad-hud-top-left mono-text">
-                <div>RESP. TÉCNICO: Eng. José Antonio</div>
-                <div>CREA: MA/PA 112340922-6</div>
-                <div id="hero-part-label">PEÇA: Suporte Estrutural / Conjunto</div>
-              </div>
-
               <div class="cad-hud-bottom">
-                <span class="hud-hint"><i data-lucide="mouse"></i> Arraste para girar • Scroll para zoom</span>
+                <span class="hud-hint" id="hero-part-label">Arraste para girar</span>
                 <div class="hud-controls">
-                  <button class="hud-btn active" id="hero-btn-solid" title="Modo Sólido Sombreamento">Sólido</button>
-                  <button class="hud-btn" id="hero-btn-wire" title="Modo Arestas / Malha CAD">Wireframe</button>
-                  <button class="hud-btn" id="hero-btn-switch" title="Trocar Peça de Exemplo">Trocar Peça</button>
+                  <button class="hud-btn active" id="hero-btn-solid">Sólido</button>
+                  <button class="hud-btn" id="hero-btn-wire">Malha</button>
+                  <button class="hud-btn" id="hero-btn-switch">Trocar Peça</button>
                 </div>
               </div>
             </div>
@@ -209,11 +163,11 @@
         <!-- Destaques Rápidos de Projetos -->
         <div class="section-preview-bar">
           <div>
-            <span class="eyebrow">PROJETOS & DOCUMENTAÇÃO TÉCNICA</span>
-            <h2 class="section-subtitle">Destaques em Projetos Mecânicos, Estruturas e NR-12</h2>
+            <span class="eyebrow">PORTFÓLIO</span>
+            <h2 class="section-subtitle">Projetos em Destaque</h2>
           </div>
-          <button class="btn btn-outline" data-tab-target="projetos">
-            Ver todos os projetos <i data-lucide="arrow-right"></i>
+          <button class="btn btn-outline btn-sm" data-tab-target="projetos">
+            Ver todos <i data-lucide="arrow-right"></i>
           </button>
         </div>
 
@@ -650,35 +604,50 @@
             </div>
           </div>
 
-          <form class="contact-form" id="contact-form">
-            <h3>Enviar Solicitação Técnica</h3>
-            <div class="form-group">
-              <label for="nome">Nome / Empresa</label>
-              <input type="text" id="nome" placeholder="Ex.: Construtora / Indústria / Logística" required />
+          <div class="contact-direct-panel">
+            <span class="mono-text text-accent">ATENDIMENTO DIRETO & SEM BUROCRACIA</span>
+            <h3>Fale comigo em 1 clique</h3>
+            <p class="contact-direct-desc">
+              Sem formulários longos: escolha abaixo o assunto ou canal de sua preferência para falar diretamente comigo
+              sobre projetos, laudos ou oportunidades.
+            </p>
+
+            <a href="https://wa.me/5598984869252?text=Ol%C3%A1%20Eng.%20Jos%C3%A9%20Antonio,%20vi%20seu%20portf%C3%B3lio%20e%20gostaria%20de%20conversar!"
+              target="_blank" rel="noopener" class="btn btn-primary btn-full contact-wa-hero">
+              <i data-lucide="message-circle"></i>
+              Fale Comigo Agora pelo WhatsApp
+            </a>
+
+            <div class="quick-topic-box">
+              <span class="mono-text">OU INICIE A CONVERSA JÁ COM O ASSUNTO:</span>
+              <div class="quick-topic-list">
+                <a href="https://wa.me/5598984869252?text=Ol%C3%A1%20Eng.%20Jos%C3%A9%20Antonio,%20gostaria%20de%20falar%20sobre%20um%20Projeto%203D%20no%20SolidWorks%20/%20Inventor."
+                  target="_blank" rel="noopener" class="quick-topic-btn">
+                  <i data-lucide="box"></i>
+                  <span>Projeto 3D em SolidWorks / Inventor</span>
+                  <i data-lucide="arrow-up-right"></i>
+                </a>
+                <a href="https://wa.me/5598984869252?text=Ol%C3%A1%20Eng.%20Jos%C3%A9%20Antonio,%20preciso%20de%20C%C3%A1lculo%20Estrutural%20(Andaimes,%20I%C3%A7amento%20ou%20Suportes)."
+                  target="_blank" rel="noopener" class="quick-topic-btn">
+                  <i data-lucide="calculator"></i>
+                  <span>Cálculo Estrutural (Içamento, Andaimes, Suportes)</span>
+                  <i data-lucide="arrow-up-right"></i>
+                </a>
+                <a href="https://wa.me/5598984869252?text=Ol%C3%A1%20Eng.%20Jos%C3%A9%20Antonio,%20gostaria%20de%20falar%20sobre%20Laudo%20NR-12%20(HRN)%20ou%20Plano%20de%20Manuten%C3%A7%C3%A3o%20(PCM)."
+                  target="_blank" rel="noopener" class="quick-topic-btn">
+                  <i data-lucide="hard-hat"></i>
+                  <span>Laudo Técnico NR-12 (HRN) & Manutenção (PCM)</span>
+                  <i data-lucide="arrow-up-right"></i>
+                </a>
+                <a href="mailto:joseantonio3108@gmail.com?subject=Contato%20via%20Portf%C3%B3lio%20de%20Engenharia%20-%20Jos%C3%A9%20Antonio"
+                  class="quick-topic-btn">
+                  <i data-lucide="mail"></i>
+                  <span>Prefiro entrar em contato por E-mail</span>
+                  <i data-lucide="arrow-up-right"></i>
+                </a>
+              </div>
             </div>
-            <div class="form-group">
-              <label for="email">E-mail ou Telefone para retorno</label>
-              <input type="text" id="email" placeholder="seu@email.com ou (98) 9xxxx-xxxx" required />
-            </div>
-            <div class="form-group">
-              <label for="escopo">Tipo de Demanda</label>
-              <select id="escopo">
-                <option value="projeto">Projeto 3D em SolidWorks / Inventor</option>
-                <option value="estrutural">Cálculo Estrutural (Andaimes, Içamento, Suportes)</option>
-                <option value="nr12">Laudo Técnico NR-12 / Apreciação de Risco (HRN)</option>
-                <option value="pcm">Plano de Manutenção Preventiva/Corretiva (PCM)</option>
-                <option value="oportunidade">Oportunidade Profissional / Contratação</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="mensagem">Descrição da Necessidade</label>
-              <textarea id="mensagem" rows="4" placeholder="Descreva brevemente o projeto, equipamento ou estrutura..."
-                required></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary btn-full">
-              <i data-lucide="send"></i> Enviar Mensagem
-            </button>
-          </form>
+          </div>
         </div>
       </div>
     </section>
@@ -717,34 +686,38 @@
 
       <div class="modal-footer">
         <button class="btn btn-secondary" id="modal-close-secondary">Fechar</button>
+        <a href="https://wa.me/5598984869252" target="_blank" rel="noopener" class="btn btn-outline"
+          id="modal-contact-btn">
+          <i data-lucide="message-circle"></i> Fale Comigo sobre este Projeto
+        </a>
         <button class="btn btn-primary" id="modal-open-3d-btn">
-          <i data-lucide="rotate-3d"></i> Inspecionar Peça no Visualizador 3D
+          <i data-lucide="rotate-3d"></i> Ver no Visualizador 3D
         </button>
       </div>
     </div>
   </div>
 
   <!-- ==========================================
-       JANELA ÚNICA DE LOGIN (CLIENTE OU ADMINISTRADOR)
+       JANELA ÚNICA DE ACESSO (VISITANTE/CLIENTE OU ADMINISTRADOR)
   =========================================== -->
   <div class="project-modal-backdrop" id="unified-login-modal" aria-hidden="true">
     <div class="project-modal-content admin-modal-sm" role="dialog" aria-modal="true"
       aria-labelledby="unified-login-title">
       <div class="modal-header">
         <div>
-          <span class="mono-text text-accent">PORTAL DE ACESSO RESTRITO</span>
-          <h3 id="unified-login-title">Entrar no Sistema</h3>
+          <span class="mono-text text-accent">NAVEGAÇÃO & GERENCIAMENTO</span>
+          <h3 id="unified-login-title">Como deseja acessar?</h3>
         </div>
         <button class="modal-close" id="unified-login-close" aria-label="Fechar janela de login">
           <i data-lucide="x"></i>
         </button>
       </div>
 
-      <!-- Seletor de Perfil dentro da Janela de Login -->
+      <!-- Seletor de Perfil dentro da Janela -->
       <div class="login-role-switcher" role="tablist" aria-label="Escolher tipo de acesso">
         <button type="button" class="login-role-tab active" data-login-role="cliente" id="tab-role-cliente">
-          <i data-lucide="user-check"></i>
-          <span>Sou Cliente</span>
+          <i data-lucide="eye"></i>
+          <span>Cliente / Visitante</span>
         </button>
         <button type="button" class="login-role-tab" data-login-role="admin" id="tab-role-admin">
           <i data-lucide="shield-check"></i>
@@ -752,41 +725,34 @@
         </button>
       </div>
 
-      <!-- Formulário 1: Login do Cliente -->
-      <form id="client-login-form" class="login-role-pane active">
-        <p class="modal-desc">
-          Insira o código fornecido pelo <strong>Eng. José Antonio</strong> para liberar a aba <strong>Área do Cliente</strong>, acompanhar o andamento do projeto e baixar memórias de cálculo e laudos.
-        </p>
+      <!-- Painel 1: Cliente / Visitante (Sem formulário! Acesso direto aos projetos e Fale Comigo) -->
+      <div id="client-login-form" class="login-role-pane active">
+        <div class="client-noform-box">
+          <p class="modal-desc" style="margin-bottom:0.85rem;">
+            <strong>Acesso 100% livre para Clientes e Recrutadores!</strong> Você não precisa preencher nenhum cadastro
+            ou senha para explorar os projetos, fichas técnicas e modelos 3D no SolidWorks.
+          </p>
 
-        <div class="form-group">
-          <label for="client-name-input">Empresa / Nome do Cliente</label>
-          <input type="text" id="client-name-input" placeholder="Ex.: Lucena Logística / Engenharia" required />
+          <div class="client-noform-actions">
+            <button type="button" class="btn btn-primary btn-full" id="btn-visitor-go-projects">
+              <i data-lucide="layers"></i> Explorar Projetos & SolidWorks
+            </button>
+            <a href="https://wa.me/5598984869252?text=Ol%C3%A1%20Eng.%20Jos%C3%A9%20Antonio,%20vi%20seu%20portf%C3%B3lio%20e%20gostaria%20de%20entrar%20em%20contato!"
+              target="_blank" rel="noopener" class="btn btn-secondary btn-full">
+              <i data-lucide="message-circle"></i> Fale Comigo no WhatsApp
+            </a>
+            <button type="button" class="btn btn-outline btn-full" id="btn-visitor-go-contact">
+              <i data-lucide="mail"></i> Ver Todos os Canais de Contato
+            </button>
+          </div>
         </div>
+      </div>
 
-        <div class="form-group">
-          <label for="client-code-input">Código de Acesso do Projeto</label>
-          <input type="password" id="client-code-input" placeholder="Digite o código do projeto" required />
-          <small class="mono-text" style="display:block;margin-top:0.35rem;color:var(--text-muted);">
-            Código de demonstração: <code>CLIENTE2026</code>
-          </small>
-        </div>
-
-        <p class="admin-error-msg mono-text" id="client-login-error" hidden>
-          Código de cliente inválido. Utilize CLIENTE2026 ou o código específico do seu projeto.
-        </p>
-
-        <div class="modal-footer" style="margin-top:1.25rem;">
-          <button type="button" class="btn btn-secondary js-close-unified-login">Cancelar</button>
-          <button type="submit" class="btn btn-primary">
-            <i data-lucide="unlock"></i> Liberar Área do Cliente
-          </button>
-        </div>
-      </form>
-
-      <!-- Formulário 2: Login do Administrador (Eng. José) -->
+      <!-- Painel 2: Login do Administrador (Eng. José) -->
       <form id="admin-login-form" class="login-role-pane" hidden>
         <p class="modal-desc">
-          Acesso exclusivo do <strong>Eng. José Antonio</strong> para cadastrar novos projetos, editar fichas técnicas, definir códigos de clientes e gerenciar o portfólio.
+          Acesso exclusivo do <strong>Eng. José Antonio</strong> para cadastrar novos projetos, editar fichas técnicas,
+          definir códigos de clientes e gerenciar o portfólio.
         </p>
 
         <div class="form-group">
@@ -970,6 +936,13 @@
       </form>
     </div>
   </div>
+
+  <!-- Botão Flutuante "Fale Comigo" com mensagem automática para o WhatsApp do Eng. José -->
+  <a href="https://wa.me/5598984869252?text=Ol%C3%A1%20Eng.%20Jos%C3%A9%20Antonio!%20Vi%20seu%20portf%C3%B3lio%20de%20Engenharia%20Mec%C3%A2nica%20e%20Projetos%20e%20gostaria%20de%20conversar."
+    target="_blank" rel="noopener" class="floating-wa-btn" aria-label="Fale comigo no WhatsApp">
+    <i data-lucide="message-circle"></i>
+    <span>Fale Comigo</span>
+  </a>
 
   <footer class="site-footer">
     <div class="container footer-inner">
